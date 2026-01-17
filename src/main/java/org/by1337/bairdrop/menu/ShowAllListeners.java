@@ -14,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import org.by1337.bairdrop.AirDrop;
 import org.by1337.bairdrop.BAirDrop;
@@ -197,6 +198,16 @@ public class ShowAllListeners implements Listener {
     public void onClose(InventoryCloseEvent e) {
         if (e.getInventory().equals(inventory)) {
             HandlerList.unregisterAll(this);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (airDrop.getEditAirMenu() != null)
+                        airDrop.getEditAirMenu().unReg();
+                    EditAirMenu em = new EditAirMenu(airDrop);
+                    airDrop.setEditAirMenu(em);
+                    e.getPlayer().openInventory(em.getInventory());
+                }
+            }.runTaskLater(BAirDrop.getInstance(), 1L);
         }
     }
 }

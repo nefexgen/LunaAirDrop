@@ -2,7 +2,6 @@ package org.by1337.bairdrop.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
@@ -10,8 +9,6 @@ import org.bukkit.entity.Player;
 
 import org.by1337.bairdrop.AirDrop;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +20,6 @@ public class EasyBossBar   {
     private String consTimer = null;
     private BarColor barColor = BarColor.GREEN;
     private BarStyle barStyle = BarStyle.SEGMENTED_6;
-    private List<BarFlag> barFlags = new ArrayList<>();
     private String title = "&cTitle";
     private final AirDrop airDrop;
     private final String id;
@@ -32,7 +28,6 @@ public class EasyBossBar   {
         this.id = id;
         this.airDrop = airDrop;
         bossBar = Bukkit.createBossBar(title, barColor, barStyle);
-    //    Bukkit.getPluginManager().registerEvents(this, BAirDrop.getInstance());
     }
     public void update(){
         bossBar.removeAll();
@@ -75,7 +70,6 @@ public class EasyBossBar   {
 
 
     public void execCommands(String commands){
-    //    commands.replace("], ", "],");
         String[] args = commands.split(",");
         for (String cmd : args){
             if (cmd.contains("[minRadius=")){
@@ -130,10 +124,8 @@ public class EasyBossBar   {
                 continue;
             }
             if (cmd.contains("[remove]")){
-              //  HandlerList.unregisterAll(this);
                 ExecuteCommands.easyBossBarHashMap.remove(id);
                 bossBar.removeAll();
-               // update();
                 continue;
             }
         }

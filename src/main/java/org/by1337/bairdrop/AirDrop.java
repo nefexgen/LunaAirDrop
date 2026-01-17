@@ -13,6 +13,8 @@ import org.by1337.bairdrop.worldGuardHook.SchematicsManager;
 import org.by1337.bairdrop.customListeners.CustomEvent;
 import org.by1337.bairdrop.customListeners.observer.Observable;
 import org.by1337.bairdrop.effect.IEffect;
+import org.by1337.bairdrop.hologram.HologramSettings;
+import org.by1337.bairdrop.hologram.HologramType;
 import org.by1337.bairdrop.menu.AddingItems;
 import org.by1337.bairdrop.menu.EditAirMenu;
 import org.by1337.bairdrop.ItemUtil.Items;
@@ -402,6 +404,10 @@ public interface AirDrop extends Observable {
 
     void setDisplayName(String displayName);
 
+    String getEventListName();
+
+    void setEventListName(String eventListName);
+
     int getInventorySize();
 
     World getWorld();
@@ -431,6 +437,8 @@ public interface AirDrop extends Observable {
     int getTimeToOpen();
 
     void setTimeToOpen(int timeToOpen);
+
+    int getAutoActivateTimer();
 
     boolean isStartCountdownAfterClick();
 
@@ -500,4 +508,13 @@ public interface AirDrop extends Observable {
     void setDecoyFakeNames(List<String> names);
     DecoyManager getDecoyManager();
     void setDecoyManager(DecoyManager decoyManager);
+
+    HologramType getHologramType();
+    void setHologramType(HologramType type);
+    HologramSettings getHologramSettings();
+
+    boolean isTopLooterGlowEnabled();
+    void setTopLooterGlowEnabled(boolean enabled);
+    int getTopLooterGlowDuration();
+    void setTopLooterGlowDuration(int duration);
 }

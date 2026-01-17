@@ -1,6 +1,7 @@
 air-id: 'default' # ID аирдропа
 air-name: '<b><gradient:#FF2F2F:#E56EFF>Мистический сундук</gradient></b>' # Название аирдропа
 inv-name: '<b><gradient:#FF2F2F:#E56EFF>Мистический сундук</gradient></b>' # Название инвентаря
+event-list-name: '&6Мистический сундук' # Название в /event delay
 chest-inventory-size: 54 # Размер инвентаря (9, 18, 27, 36, 45, 54)
 
 spawn-chance: 50 # Шанс спавна при случайном выборе
@@ -15,16 +16,24 @@ use-static-loc: false # Использовать статическую лока
 use-only-static-loc: false # Использовать ТОЛЬКО статическую локацию
 static-location:
   world: world
-  x: 0
-  y: 0
-  z: 0
+  x: 0.0
+  y: 0.0
+  z: 0.0
 
-timeToStart: 2.0 # Время до появления (в минутах, 0.5 для 30 сек)
-search-before-start: 1.0 # Время поиска локации перед стартом
-openingTime: 1.0 # Время до открытия аирдропа
-time-stop-event: 1.0 # Время до исчезновения после открытия
+timeToStart: 2m # Время до появления (формат: 1h 30m 20s)
+search-before-start: 1m # Время поиска локации перед стартом
+
+scheduled-time: # Запуск по расписанию
+  enabled: false
+  times: # Список времён запуска (формат 24ч)
+    - '12:00'
+    - '18:00'
+
+openingTime: 1m # Время до открытия аирдропа
+time-stop-event: 1m # Время до исчезновения после открытия
 
 start-countdown-after-click: false # Начать отсчёт открытия после клика по сундуку
+auto-activate: false # Авто-активация если не активирован вручную (время - openingTime)
 time-stop-event-must-go: false # Таймер исчезновения идёт даже если сундук закрыт
 stop-when-empty: false # Исчезнуть когда инвентарь пуст
 min-online-players: 1 # Минимум игроков онлайн для спавна
@@ -33,10 +42,26 @@ random-slot: true # Случайное расположение предмето
 chest-material-locked: RESPAWN_ANCHOR # Блок закрытого аирдропа
 chest-material-unlocked: CHEST # Блок открытого аирдропа
 
+holograms: armorstand # Тип голограммы (textdisplay / armorstand)
+
 holo-offsets: # Смещение голограммы относительно блока
   x: 0.5
-  y: 2.5
+  y: 1.5
   z: 0.5
+
+holo-settings: # Настройки голограммы (только для textdisplay)
+  text-shadow: true           # Тень текста
+  text-opacity: 100           # Прозрачность текста (0-100)
+  background-color: '#000000' # Цвет фона в формате HEX
+  background-opacity: 0       # Прозрачность фона (0-100)
+  see-through: false          # Видно ли через блоки
+  view-range: 32.0            # Дальность видимости (в блоках)
+  brightness: 15              # Яркость (0-15, -1 для авто)
+  scale: 1.0                  # Масштаб
+  text-alignment: CENTER      # Выравнивание текста (LEFT, CENTER, RIGHT)
+  billboard: CENTER           # Фиксированный поворот (CENTER, FIXED, VERTICAL, HORIZONTAL)
+  yaw: 0.0                    # Поворот по горизонтали (только при billboard: FIXED)
+  pitch: 0.0                  # Поворот по вертикали (только при billboard: FIXED)
 
 air-holo-to-start: # Голограмма до появления
   - '{air-name}'
@@ -78,6 +103,10 @@ signed-events: # Подключённые слушатели (listeners.yml)
   - end
   - alert-open
   - spawn-summoner
+
+top-looter-glow: # Подсветка игрока с наибольшим лутом (только при stop-when-empty: true)
+  enabled: false
+  duration: 10 # Длительность (в секундах)
 
 inv: # Предметы в инвентаре (слот -> шанс -> предмет)
   'Редактирование наград &cаирдропа':

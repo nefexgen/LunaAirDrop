@@ -14,7 +14,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.by1337.bairdrop.AirDrop;
 import org.by1337.bairdrop.BAirDrop;
-import org.by1337.bairdrop.CAirDrop;
 import org.by1337.bairdrop.util.Message;
 
 import java.util.ArrayList;

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.by1337.bairdrop.AirDrop;
-import org.by1337.bairdrop.CAirDrop;
 import org.by1337.bairdrop.util.AirManager;
 import org.by1337.bairdrop.util.Message;
 

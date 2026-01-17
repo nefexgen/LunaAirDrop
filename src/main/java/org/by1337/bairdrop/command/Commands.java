@@ -20,6 +20,7 @@ import org.by1337.bairdrop.scripts.Script;
 import org.by1337.bairdrop.util.InvalidCharacters;
 import org.by1337.bairdrop.util.InvalidCharactersChecker;
 import org.by1337.bairdrop.util.Message;
+import org.by1337.bairdrop.util.TimeParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -201,7 +202,6 @@ public class Commands implements CommandExecutor {
                         BAirDrop.airDrops.get(args[1]).getEditAirMenu().unReg();
                     }
                     EditAirMenu em = new EditAirMenu(BAirDrop.airDrops.get(args[1]));
-                 //   getServer().getPluginManager().registerEvents(em, BAirDrop.getInstance());
                     BAirDrop.airDrops.get(args[1]).setEditAirMenu(em);
                     pl.openInventory(em.getInventory());
 
@@ -393,6 +393,66 @@ public class Commands implements CommandExecutor {
                 }
                 return true;
 
+            }
+            if (args[0].equals("delay")) {
+                if (!pl.hasPermission("bair.delay")) {
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("no-prem"));
+                    return true;
+                }
+                Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("event-delay-header"));
+                int num = 1;
+                boolean hasEvents = false;
+                if (BAirDrop.globalTimer != null && BAirDrop.globalTimer.getTimeToStart() > 0) {
+                    String time = TimeParser.formatSecondsRu(BAirDrop.globalTimer.getTimeToStart());
+                    String line = BAirDrop.getConfigMessage().getMessage("event-delay-line")
+                            .replace("{num}", String.valueOf(num++))
+                            .replace("{time}", time);
+                    Message.sendMsg(pl, line);
+                    hasEvents = true;
+                }
+                for (AirDrop air : BAirDrop.airDrops.values()) {
+                    if (air.isAirDropStarted()) {
+                        String nameLine = BAirDrop.getConfigMessage().getMessage("event-delay-spawned-name")
+                                .replace("{num}", String.valueOf(num++))
+                                .replace("{name}", air.getEventListName());
+                        Message.sendMsg(pl, nameLine);
+                        
+                        String statusLine;
+                        if (air.isStartCountdownAfterClick() && !air.isActivated()) {
+                            statusLine = BAirDrop.getConfigMessage().getMessage("event-delay-spawned-status-inactive")
+                                    .replace("{time}", TimeParser.formatSecondsRu(air.getAutoActivateTimer()));
+                        } else if (!air.isAirDropLocked()) {
+                            statusLine = BAirDrop.getConfigMessage().getMessage("event-delay-spawned-status-open")
+                                    .replace("{time}", TimeParser.formatSecondsRu(air.getTimeStop()));
+                        } else {
+                            statusLine = BAirDrop.getConfigMessage().getMessage("event-delay-spawned-status-closed")
+                                    .replace("{time}", TimeParser.formatSecondsRu(air.getTimeToOpen()));
+                        }
+                        Message.sendMsg(pl, statusLine);
+                        
+                        if (air.getAirDropLocation() != null) {
+                            String coordsLine = BAirDrop.getConfigMessage().getMessage("event-delay-spawned-coords")
+                                    .replace("{x}", String.valueOf(air.getAirDropLocation().getBlockX()))
+                                    .replace("{y}", String.valueOf(air.getAirDropLocation().getBlockY()))
+                                    .replace("{z}", String.valueOf(air.getAirDropLocation().getBlockZ()));
+                            Message.sendMsg(pl, coordsLine);
+                        }
+                        hasEvents = true;
+                        continue;
+                    }
+                    if (air.isTimeCountingEnabled() && air.getTimeToStart() > 0) {
+                        String time = TimeParser.formatSecondsRu(air.getTimeToStart());
+                        String line = BAirDrop.getConfigMessage().getMessage("event-delay-line")
+                                .replace("{num}", String.valueOf(num++))
+                                .replace("{time}", time);
+                        Message.sendMsg(pl, line);
+                        hasEvents = true;
+                    }
+                }
+                if (!hasEvents) {
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("event-delay-no-events"));
+                }
+                return true;
             }
         } else {
             if (args.length == 0) {

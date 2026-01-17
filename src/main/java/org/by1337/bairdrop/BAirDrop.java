@@ -1,7 +1,5 @@
 package org.by1337.bairdrop;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,7 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.by1337.bairdrop.configManager.CConfig;
 import org.by1337.bairdrop.configManager.ConfigMessage;
 import org.by1337.bairdrop.configManager.Config;
-import org.by1337.bairdrop.hologram.*;
+import org.by1337.bairdrop.hologram.HologramManager;
 import org.by1337.bairdrop.listeners.Compass;
 import org.by1337.bairdrop.listeners.CraftItem;
 import org.by1337.bairdrop.listeners.InteractListener;
@@ -18,6 +16,12 @@ import org.by1337.bairdrop.summoner.Summoner;
 import org.by1337.bairdrop.worldGuardHook.RegionManager;
 import org.by1337.bairdrop.command.Commands;
 import org.by1337.bairdrop.command.Completer;
+import org.by1337.bairdrop.command.DelayCommand;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.Plugin;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import org.by1337.bairdrop.customListeners.CustomEvent;
 import org.by1337.bairdrop.customListeners.observer.Observer;
 import org.by1337.bairdrop.effect.effectImpl.*;
@@ -41,12 +45,9 @@ public final class BAirDrop extends JavaPlugin {
     public static HashMap<String, CustomCraft> crafts = new HashMap<>();
     public static Compass compass;
     public static LogLevel logLevel;
-    public static IHologram hologram;
     private static Config config;
     private static ConfigMessage configMessage;
     private static BAirDrop instance;
-
-    private static ProtocolManager protocolManager = null;
 
     @Override
     public void onLoad() {
@@ -87,21 +88,12 @@ public final class BAirDrop extends JavaPlugin {
 
         Objects.requireNonNull(getInstance().getCommand("bairdrop")).setExecutor(new Commands());
         Objects.requireNonNull(getInstance().getCommand("bairdrop")).setTabCompleter(new Completer());
+        registerDelayAliases();
         Bukkit.getServer().getPluginManager().registerEvents(new InteractListener(), getInstance());
         getServer().getPluginManager().registerEvents(summoner, getInstance());
         getServer().getPluginManager().registerEvents(new CraftItem(), BAirDrop.getInstance());
         getServer().getPluginManager().registerEvents(compass, BAirDrop.getInstance());
 
-
-        if (Bukkit.getPluginManager().getPlugin("DecentHolograms") != null) {
-            hologram = new DecentHologram();
-        } else if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
-            protocolManager = ProtocolLibrary.getProtocolManager();
-            hologram = new ProtocolHoloManager();
-        } else {
-            hologram = new EmptyHologram();
-            Message.error(getConfigMessage().getMessage("depend-not-found"));
-        }
 
         for (File file : getiConfig().getAirDrops().keySet()) {
             AirDrop airDrop = new CAirDrop(getiConfig().getAirDrops().get(file), file);
@@ -168,7 +160,7 @@ public final class BAirDrop extends JavaPlugin {
             if (airDrop.isClone())
                 airDrop.End();
             airDrop.notifyObservers(CustomEvent.UNLOAD, null);
-            BAirDrop.hologram.remove(airDrop.getId());
+            HologramManager.remove(airDrop.getId());
             airDrop.save();
             airDrop.schematicsUndo();
             RegionManager.RemoveRegion(airDrop);
@@ -191,7 +183,7 @@ public final class BAirDrop extends JavaPlugin {
             if (airDrop.isClone())
                 airDrop.End();
             airDrop.notifyObservers(CustomEvent.UNLOAD, null);
-            BAirDrop.hologram.remove(airDrop.getId());
+            HologramManager.remove(airDrop.getId());
             airDrop.setCanceled(true);
             airDrop.schematicsUndo();
             RegionManager.RemoveRegion(airDrop);
@@ -229,8 +221,29 @@ public final class BAirDrop extends JavaPlugin {
         }
     }
 
-    public static ProtocolManager getProtocolManager() {
-        return protocolManager;
+    private void registerDelayAliases() {
+        List<String> aliases = getConfig().getStringList("delay-command.aliases");
+        if (aliases.isEmpty()) return;
+        
+        try {
+            Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            commandMapField.setAccessible(true);
+            CommandMap commandMap = (CommandMap) commandMapField.get(Bukkit.getServer());
+            
+            DelayCommand delayCommand = new DelayCommand();
+            for (String alias : aliases) {
+                Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
+                constructor.setAccessible(true);
+                PluginCommand cmd = constructor.newInstance(alias, this);
+                cmd.setExecutor(delayCommand);
+                cmd.setTabCompleter(delayCommand);
+                cmd.setPermission("bair.delay");
+                commandMap.register(getName(), cmd);
+            }
+        } catch (Exception e) {
+            Message.error("Failed to register delay command aliases: " + e.getMessage());
+        }
     }
+
 }
 

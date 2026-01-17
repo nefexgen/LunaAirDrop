@@ -11,6 +11,7 @@ import org.by1337.bairdrop.AirDrop;
 import org.by1337.bairdrop.BAirDrop;
 import org.by1337.bairdrop.menu.EditAirMenu;
 import org.by1337.bairdrop.util.Message;
+import org.by1337.bairdrop.util.TimeParser;
 
 public class ListenChat implements Listener {
     public static ListenChat ListenChat = null;
@@ -105,11 +106,11 @@ public class ListenChat implements Listener {
                         e.setCancelled(true);
                         return;
                     }
-                    double x = Double.parseDouble(e.getMessage());
-                    airDrop.setTimeToStartCons(x);
-                    airDrop.setTimeToStart((int) (x * 60));
+                    int seconds = TimeParser.parseToSeconds(e.getMessage());
+                    airDrop.setTimeToStart(seconds);
+                    airDrop.setTimeToStartCons(seconds / 60.0);
                     airDrop.save();
-                    Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("time-to-start-changed"), e.getMessage()));
+                    Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("time-to-start-changed"), TimeParser.formatSeconds(seconds)));
                 }
                 if (changeNameString.equalsIgnoreCase("searchbeforestart") || changeNameString.equalsIgnoreCase("searchbeforestartcons")) {
                     if (airDrop.isAirDropStarted()){
@@ -117,11 +118,11 @@ public class ListenChat implements Listener {
                         e.setCancelled(true);
                         return;
                     }
-                    double x = Double.parseDouble(e.getMessage());
-                    airDrop.setSearchBeforeStartCons(x);
-                    airDrop.setSearchBeforeStart((int) (x * 60));
+                    int seconds = TimeParser.parseToSeconds(e.getMessage());
+                    airDrop.setSearchBeforeStart(seconds);
+                    airDrop.setSearchBeforeStartCons(seconds / 60.0);
                     airDrop.save();
-                    Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("search-before-start-changed"), e.getMessage()));
+                    Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("search-before-start-changed"), TimeParser.formatSeconds(seconds)));
                 }
                 if (changeNameString.equalsIgnoreCase("timetoopen") || changeNameString.equalsIgnoreCase("timetounlockcons")) {
                     if (airDrop.isAirDropStarted()){
@@ -129,11 +130,11 @@ public class ListenChat implements Listener {
                         e.setCancelled(true);
                         return;
                     }
-                    double x = Double.parseDouble(e.getMessage());
-                    airDrop.setTimeToUnlockCons(x);
-                    airDrop.setTimeToOpen((int) (x * 60));
+                    int seconds = TimeParser.parseToSeconds(e.getMessage());
+                    airDrop.setTimeToOpen(seconds);
+                    airDrop.setTimeToUnlockCons(seconds / 60.0);
                     airDrop.save();
-                    Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("time-to-open-changed"), e.getMessage()));
+                    Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("time-to-open-changed"), TimeParser.formatSeconds(seconds)));
                 }
                 if (changeNameString.equalsIgnoreCase("timestop") || changeNameString.equalsIgnoreCase("timetostopcons")) {
                     if (airDrop.isAirDropStarted()){
@@ -141,11 +142,11 @@ public class ListenChat implements Listener {
                         e.setCancelled(true);
                         return;
                     }
-                    double x = Double.parseDouble(e.getMessage());
-                    airDrop.setTimeToStopCons(x);
-                    airDrop.setTimeStop((int) (x * 60));
+                    int seconds = TimeParser.parseToSeconds(e.getMessage());
+                    airDrop.setTimeStop(seconds);
+                    airDrop.setTimeToStopCons(seconds / 60.0);
                     airDrop.save();
-                    Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("time-to-stop-changed"), e.getMessage()));
+                    Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("time-to-stop-changed"), TimeParser.formatSeconds(seconds)));
                 }
                 if (changeNameString.equalsIgnoreCase("minonlineplayers")) {
                     if (airDrop.isAirDropStarted()){
@@ -176,6 +177,7 @@ public class ListenChat implements Listener {
             }.runTaskTimer(BAirDrop.getInstance(), 1, 1);
         }
     }
+
 
 }
 

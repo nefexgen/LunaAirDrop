@@ -204,7 +204,7 @@ main:
         - '[change-airProtect]'
   editTimeToStart:
     slot: 51
-    name: '&eTime to Start &8(in minutes)'
+    name: '&eTime to Start'
     material: NAME_TAG
     lore:
       - ''
@@ -212,9 +212,11 @@ main:
       - ''
       - '&a▶ LMB &8- &7Change'
     commands:
+      LEFT-CLICK:
+        - '[change-timeToStart]'
   editSearchBeforeStart:
     slot: 47
-    name: '&eTime to Search &8(in minutes)'
+    name: '&eTime to Search'
     material: NAME_TAG
     lore:
       - ''
@@ -227,7 +229,7 @@ main:
         - '[change-searchBeforeStart]'
   editTimeToOpen:
     slot: 48
-    name: '&eTime to Open &8(in minutes)'
+    name: '&eTime to Open'
     material: NAME_TAG
     lore:
       - ''
@@ -239,7 +241,7 @@ main:
         - '[change-timeToOpen]'
   editTimeStop:
     slot: 49
-    name: '&eTime to Disappear &8(in minutes)'
+    name: '&eTime to Disappear'
     material: NAME_TAG
     lore:
       - ''

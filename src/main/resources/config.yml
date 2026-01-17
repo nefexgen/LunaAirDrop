@@ -26,6 +26,11 @@ global-time:
   enable: false
   time: 90
 
+delay-command:
+  aliases:
+    - event
+    - events
+
 settings:
   world-guard-flags:
     allow-flags:

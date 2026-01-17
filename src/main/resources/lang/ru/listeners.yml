@@ -140,7 +140,7 @@ listeners:
 
 
   alert:
-    description: '&6Отправляет сообщение всем о появлении   аирдропа'
+    description: '&6Отправляет сообщение всем о появлении аирдропа'
     event: 'START_EVENT'
     commands:
       - '[MESSAGE_ALL] {air-name}&7 появился! Координаты: &6{x}&7, &6{y}&7, &6{z}'
@@ -177,7 +177,7 @@ listeners:
       - '[MESSAGE_ALL] {air-name}&7 открыт!'
 
   ACTIVATE:
-    description: '&6Сообщение об активации аирдропа.   Также запускает эффект'
+    description: '&6Сообщение об активации аирдропа. Также запускает эффект'
     event: 'ACTIVATE'
     commands:
       - '[MESSAGE_ALL] &7Игрок &6%player_name% &7активировал {air-name}'
@@ -186,7 +186,7 @@ listeners:
       - '[SOUND_ALL] UI_TOAST_CHALLENGE_COMPLETE'
 
   spawn-summoner-alert:
-    description: '&6Отправляет сообщение, что игрок   призвал аирдроп'
+    description: '&6Отправляет сообщение, что игрок призвал аирдроп'
     event: 'SUMMONER'
     commands:
       - '[MESSAGE_ALL] &7Игрок &6%player_name% &7призвал {air-name}&7!'
@@ -194,21 +194,21 @@ listeners:
 
 
   chest-closed:
-    description: '&6Отправляет сообщение игроку, что   аирдроп закрыт'
+    description: '&6Отправляет сообщение игроку, что аирдроп закрыт'
     event: 'CLICK_CLOSE'
     commands:
       - '[MESSAGE] {air-name} &cзакрыт!'
       - '[SOUND] BLOCK_BARREL_CLOSE'
 
   chest-open:
-    description: '&6Проигрывает звук игроку при клике   на аирдроп'
+    description: '&6Проигрывает звук игроку при клике на аирдроп'
     event: 'CLICK_OPEN'
     commands:
       - '[SOUND] BLOCK_BARREL_OPEN'
 
 
   spawn-summoner:
-    description: '&6Спавнит частицы, если аирдроп призван   игроком'
+    description: '&6Спавнит частицы, если аирдроп призван игроком'
     event: 'SUMMONER'
     requirement:
       check-1:
@@ -242,7 +242,7 @@ listeners:
       - '[SET_MATERIAL_AIR]-offsets'
 
   steal:
-    description: '&6Когда игрок использует чит для кражи   из сундука'
+    description: '&6Когда игрок использует чит для кражи из сундука'
     event: 'PLAYER_STEAL'
     commands:
       - '[CONSOLE] kick &6%player_name% &7cheat'

@@ -100,10 +100,8 @@ public class ChangeMaterial implements Listener {
             }
             if (isMaterialLocked) {
                 airDrop.setMaterialLocked(e.getCurrentItem().getType());
-                e.getWhoClicked().closeInventory();
             } else {
                 airDrop.setMaterialUnlocked(e.getCurrentItem().getType());
-                e.getWhoClicked().closeInventory();
             }
             airDrop.save();
             if (airDrop.getEditAirMenu() != null)
@@ -118,7 +116,6 @@ public class ChangeMaterial implements Listener {
     public void onClose(InventoryCloseEvent e) {
         if (e.getInventory().equals(inventory)) {
             HandlerList.unregisterAll(this);
-
         }
     }
 

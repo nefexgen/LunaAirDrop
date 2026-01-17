@@ -1,26 +1,53 @@
-# You can spawn the effect before the airdrop appears, but the location must be pre-generated! The parameter "search-before-start" is responsible for that.
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║                                                                            ║
+# ║                             Настройка эффектов                             ║
+# ║                                                                            ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+# Эффект можно запустить до появления аирдропа, но локация
+# должна быть заранее сгенерирована! За это отвечает параметр
+# "search-before-start" в конфиге аирдропа.
+#
+# Доступные типы эффектов:
+#   - CIRCLE           : Круг из частиц
+#   - EXPANDING_CIRCLE : Расширяющийся круг
+#   - HELIX            : Спираль (ДНК)
+#   - WRITHING_HELIX   : Извивающаяся спираль
+#   - TORUS            : Тор (бублик)
+#   - FIREWORK         : Фейерверк
+#   - RANDOM_PARTICLE  : Случайные частицы
+#   - PARTICLE_EXPLOSION : Взрыв частиц
+#   - SPAWN_GUARD      : Спавн стражей
+#
+# Запрещённые символы в названии эффекта: (., -)
+# ============================================================
+
 effects:
-  ef=1: # Effect name. Forbidden characters: (., -)
-    type: CIRCLE # Type of effect.
-    ticks: 36000 # Lifetime in ticks (assuming you will disable the effect through an event, but if you forget to do so, the effect will automatically disable after 36000 ticks (30 minutes)). Increase if necessary.
-    timeUpdate: 10 # How often in ticks to spawn new particles.
-    radius: 1.5 # Circle radius.
-    count: 0 # Number of particles. Set to 0 to prevent particle dispersion, or you can experiment with this value to achieve an unusual effect.
-    step: 0.05 # Distance between particles, directly affecting their quantity!
-    offset-x: 0.5 # Offset along the coordinates.
+
+# ┌────────────────────────────────────────────────┐
+# │                  Круг (circle)                 │
+# └────────────────────────────────────────────────┘
+
+  ef=1:
+    type: CIRCLE
+    ticks: 36000                # Время жизни в тиках (36000 = 30 минут)
+    timeUpdate: 10              # Частота обновления частиц (в тиках)
+    radius: 1.5                 # Радиус круга
+    count: 0                    # Количество частиц (0 = без рассеивания)
+    step: 0.05                  # Расстояние между частицами
+    number-of-steps: 6.5        # Количество шагов (6.5 / 0.05 = 130 частиц)
+    offset-x: 0.5
     offset-y: 0.3
     offset-z: 0.5
-    direction-x: 0 # Направление полёта частиц. Не работает с REDSTONE
+    direction-x: 0              # Направление полёта (не работает с REDSTONE)
     direction-y: 0
     direction-z: 0
-    speed: 0 #скорость полёта если есть направление полёта
-    number-of-steps: 6.5 # Influences the number of particles. 6.5 / 0.05 = 130 spawned particles (number-of-steps / step).
+    speed: 0                    # Скорость полёта частиц
     particle: REDSTONE
-    # To specify color and size for particles "REDSTONE", you need to include the color and size parameters.
-    size: 3
-    color-rgb-r: 0
+    size: 3                     # Размер частицы (только для REDSTONE)
+    color-rgb-r: 0              # Цвет RGB (только для REDSTONE)
     color-rgb-g: 255
     color-rgb-b: 255
+
   ef=2:
     type: CIRCLE
     ticks: 36000
@@ -28,6 +55,7 @@ effects:
     radius: 2
     count: 0
     step: 0.05
+    number-of-steps: 6.5
     offset-x: 0.5
     offset-y: 0.7
     offset-z: 0.5
@@ -35,106 +63,141 @@ effects:
     direction-y: 0
     direction-z: 0
     speed: 0
-    number-of-steps: 6.5
     particle: REDSTONE
-    #only REDSTONE#
     size: 3
     color-rgb-r: 255
     color-rgb-g: 0
     color-rgb-b: 255
 
+# ┌────────────────────────────────────────────────┐
+# │                 Спираль (helix)                │
+# └────────────────────────────────────────────────┘
+
   ef=3:
     type: HELIX
     ticks: 36000
     timeUpdate: 15
-    radius: 1
+    radius: 1                   # Радиус спирали
+    height: 30                  # Высота спирали
     count: 0
     step: 0.05
-    height: 30
     offset-x: 0.5
     offset-y: 0.7
     offset-z: 0.5
     particle: REDSTONE
-    #To specify color and size for particles "REDSTONE", you need to include the color and size parameters.
     size: 3
     color-rgb-r: 255
     color-rgb-g: 0
     color-rgb-b: 255
-  ef=5:
-    type: EXPANDING-CIRCLE # Type of effect.
+
+  ef=11:
+    type: HELIX
     ticks: 36000
-    timeUpdate: 4
-    radius: 1.5 # Initial radius.
-    end-radius: 7 # End radius.
-    step-radius: 0.3 # Amount to increase intermediate radius by per timeUpdate.
+    timeUpdate: 15
+    radius: 15
+    height: 30
     count: 0
-    viewDistance: 30
     step: 0.05
     offset-x: 0.5
     offset-y: 0.7
     offset-z: 0.5
+    particle: REDSTONE
+    size: 3
+    color-rgb-r: 255
+    color-rgb-g: 0
+    color-rgb-b: 255
+
+# ┌────────────────────────────────────────────────┐
+# │      Расширяющийся круг (expanding_circle)     │
+# └────────────────────────────────────────────────┘
+
+  ef=5:
+    type: EXPANDING_CIRCLE
+    ticks: 36000
+    timeUpdate: 4
+    radius: 1.5                 # Начальный радиус
+    end-radius: 7               # Конечный радиус
+    step-radius: 0.3            # Шаг увеличения радиуса
+    count: 0
+    step: 0.05
     number-of-steps: 6.5
+    viewDistance: 30            # Дистанция видимости
+    offset-x: 0.5
+    offset-y: 0.7
+    offset-z: 0.5
     particle: FLAME
-    # To specify color and size for particles "REDSTONE", you need to include the color and size parameters.
     size: 3
     color-rgb-r: 0
     color-rgb-g: 255
     color-rgb-b: 255
 
   ef=5=1:
-    type: EXPANDING_CIRCLE # Type of effect.
+    type: EXPANDING_CIRCLE
     ticks: 36000
     timeUpdate: 4
-    radius: 1.5 # Initial radius.
-    end-radius: 7 # End radius.
-    step-radius: 0.3 # Amount to increase intermediate radius by per timeUpdate.
+    radius: 1.5
+    end-radius: 7
+    step-radius: 0.3
     count: 0
     step: 0.05
+    number-of-steps: 6.5
     offset-x: 0.5
     offset-y: 0.7
     offset-z: 0.5
-    number-of-steps: 6.5
     particle: SOUL_FIRE_FLAME
-    #To specify color and size for particles "REDSTONE", you need to include the color and size parameters.
     size: 3
     color-rgb-r: 0
     color-rgb-g: 255
     color-rgb-b: 255
 
+# ┌────────────────────────────────────────────────┐
+# │       Случайные частицы (random_particle)      │
+# └────────────────────────────────────────────────┘
+  # Частица REDSTONE не поддерживается!
+
   ef=6:
-    type: RANDOM_PARTICLE #The "REDSTONE" particle is not supported.
+    type: RANDOM_PARTICLE
     ticks: 36000
-    timeUpdate: 2 #The frequency of spawning new particles is measured in ticks.
-    radius: 7 #Spawn radius
+    timeUpdate: 2               # Частота спавна (в тиках)
+    radius: 7                   # Радиус спавна
     count: 0
     viewDistance: 30
-    particle: #You can add an unlimited number of particles. If you have a list of 10 particles, all 10 particles will be spawned during the "timeUpdate" event.
+    particle:                   # Список частиц (спавнятся все одновременно)
       - FLAME
       - PORTAL
       - FALLING_OBSIDIAN_TEAR
       - SOUL_FIRE_FLAME
       - ENCHANTMENT_TABLE
       - TOTEM
+
+# ┌────────────────────────────────────────────────┐
+# │           Спавн стражей (spawn_guard)          │
+# └────────────────────────────────────────────────┘
+
   ef=7:
     type: SPAWN_GUARD
     ticks: 1
     timeUpdate: 1
-    radius: 5
-    count: 5
-    name: '&cGuardian'
-    heal: 40
+    radius: 5                   # Радиус спавна
+    count: 5                    # Количество стражей
+    name: '&cGuardian'          # Имя стража
+    heal: 40                    # Здоровье
+
+# ┌────────────────────────────────────────────────┐
+# │              Фейерверк (firework)              │
+# └────────────────────────────────────────────────┘
 
   ef=8:
     type: FIREWORK
     ticks: 36000
     timeUpdate: 2
-    start-height: 1
-    end-height: 10
-    step-height: 0.5
+    start-height: 1             # Начальная высота
+    end-height: 10              # Конечная высота
+    step-height: 0.5            # Шаг высоты
     offset-x: 0.5
     offset-y: 0.7
     offset-z: 0.5
-    colors: #r:g:b
+    colors:                     # Цвета в формате R:G:B
       - 255:0:127
       - 0:255:127
       - 127:0:127
@@ -142,65 +205,60 @@ effects:
       - 137:0:127
       - 64:0:127
 
+# ┌────────────────────────────────────────────────┐
+# │                   Тор (torus)                  │
+# └────────────────────────────────────────────────┘
+
   ef=9:
     type: TORUS
     ticks: 36000
     timeUpdate: 15
-    inner-radius: 1
-    outer-radius: 3
+    inner-radius: 1             # Внутренний радиус
+    outer-radius: 3             # Внешний радиус
     count: 25
     step: 2
     offset-x: 0.5
     offset-y: 0.7
     offset-z: 0.5
     particle: REDSTONE
-    #To specify color and size for particles "REDSTONE", you need to include the color and size parameters.
-    size: 3
-    color-rgb-r: 255
-    color-rgb-g: 0
-    color-rgb-b: 255
-  ef=10:
-    type: WRITHING_HELIX
-    ticks: 36000
-    timeUpdate: 1
-    radius: 1
-    count: 0
-    step: 0.05
-    height: 15
-    offset-x: 0.5
-    offset-y: 0.7
-    offset-z: 0.5
-    particle: REDSTONE
-    #To specify color and size for particles "REDSTONE", you need to include the color and size parameters.
-    size: 0.5
-    color-rgb-r: 255
-    color-rgb-g: 0
-    color-rgb-b: 255
-  ef=11:
-    type: HELIX
-    ticks: 36000
-    timeUpdate: 15
-    radius: 15
-    count: 0
-    step: 0.05
-    height: 30
-    offset-x: 0.5
-    offset-y: 0.7
-    offset-z: 0.5
-    particle: REDSTONE
-    #To specify color and size for particles "REDSTONE", you need to include the color and size parameters.
     size: 3
     color-rgb-r: 255
     color-rgb-g: 0
     color-rgb-b: 255
 
-  ef=12: #The "REDSTONE" particle is not supported.
+# ┌────────────────────────────────────────────────┐
+# │      Извивающаяся спираль (writhing_helix)     │
+# └────────────────────────────────────────────────┘
+
+  ef=10:
+    type: WRITHING_HELIX
+    ticks: 36000
+    timeUpdate: 1
+    radius: 1
+    height: 15
+    count: 0
+    step: 0.05
+    offset-x: 0.5
+    offset-y: 0.7
+    offset-z: 0.5
+    particle: REDSTONE
+    size: 0.5
+    color-rgb-r: 255
+    color-rgb-g: 0
+    color-rgb-b: 255
+
+# ┌────────────────────────────────────────────────┐
+# │        Взрыв частиц (particle_explosion)       │
+# └────────────────────────────────────────────────┘
+  # Частица REDSTONE не поддерживается!
+
+  ef=12:
     type: PARTICLE_EXPLOSION
     ticks: 1
     timeUpdate: 1
     radius: 0.1
-    count: 300
-    speed: 0.15
+    count: 300                  # Количество частиц
+    speed: 0.15                 # Скорость разлёта
     offset-x: 0.5
     offset-y: 0.7
     offset-z: 0.5

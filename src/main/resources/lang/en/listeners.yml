@@ -140,7 +140,7 @@ listeners:
 
 
   alert:
-    description: '&6Sends a message to everyone about   airdrop spawn'
+    description: '&6Sends a message to everyone about airdrop spawn'
     event: 'START_EVENT'
     commands:
       - '[MESSAGE_ALL] {air-name}&7 has appeared! Coordinates: &6{x}&7, &6{y}&7, &6{z}'
@@ -177,7 +177,7 @@ listeners:
       - '[MESSAGE_ALL] {air-name}&7 is open!'
 
   ACTIVATE:
-    description: '&6Message about airdrop activation.   Also triggers an effect'
+    description: '&6Message about airdrop activation. Also triggers an effect'
     event: 'ACTIVATE'
     commands:
       - '[MESSAGE_ALL] &7Player &6%player_name% &7has activated {air-name}'
@@ -186,7 +186,7 @@ listeners:
       - '[SOUND_ALL] UI_TOAST_CHALLENGE_COMPLETE'
 
   spawn-summoner-alert:
-    description: '&6Sends a message that a player   summoned the airdrop'
+    description: '&6Sends a message that a player summoned the airdrop'
     event: 'SUMMONER'
     commands:
       - '[MESSAGE_ALL] &7Player &6%player_name% &7has summoned {air-name}&7!'
@@ -194,21 +194,21 @@ listeners:
 
 
   chest-closed:
-    description: '&6Sends a message to the player that   airdrop is closed'
+    description: '&6Sends a message to the player that airdrop is closed'
     event: 'CLICK_CLOSE'
     commands:
       - '[MESSAGE] {air-name} &cis closed!'
       - '[SOUND] BLOCK_BARREL_CLOSE'
 
   chest-open:
-    description: '&6Plays a sound to the player when   clicking on the airdrop'
+    description: '&6Plays a sound to the player when clicking on the airdrop'
     event: 'CLICK_OPEN'
     commands:
       - '[SOUND] BLOCK_BARREL_OPEN'
 
 
   spawn-summoner:
-    description: '&6Spawns particles if airdrop is summoned   by a player'
+    description: '&6Spawns particles if airdrop is summoned by a player'
     event: 'SUMMONER'
     requirement:
       check-1:
@@ -242,7 +242,7 @@ listeners:
       - '[SET_MATERIAL_AIR]-offsets'
 
   steal:
-    description: '&6When a player uses a cheat to steal   from the chest'
+    description: '&6When a player uses a cheat to steal from the chest'
     event: 'PLAYER_STEAL'
     commands:
       - '[CONSOLE] kick &6%player_name% &7cheat'

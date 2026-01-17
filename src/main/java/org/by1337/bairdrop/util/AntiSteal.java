@@ -9,6 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.by1337.bairdrop.AirDrop;
 import org.by1337.bairdrop.BAirDrop;
 import org.by1337.bairdrop.customListeners.CustomEvent;
@@ -17,11 +19,41 @@ import java.util.*;
 
 public class AntiSteal implements Listener {
     private Map<UUID, ChestStealData> chestStealDataMap = new HashMap<>();
+    private Map<UUID, Integer> lootCount = new HashMap<>();
     private final AirDrop airDrop;
 
     public AntiSteal(AirDrop airDrop) {
         this.airDrop = airDrop;
         Bukkit.getServer().getPluginManager().registerEvents(this, BAirDrop.getInstance());
+    }
+
+    public void trackLoot(Player player, int amount) {
+        lootCount.merge(player.getUniqueId(), amount, Integer::sum);
+    }
+
+    public void applyTopLooterGlow() {
+        if (!airDrop.isTopLooterGlowEnabled() || lootCount.isEmpty()) return;
+        
+        UUID topLooter = null;
+        int maxLoot = 0;
+        for (Map.Entry<UUID, Integer> entry : lootCount.entrySet()) {
+            if (entry.getValue() > maxLoot) {
+                maxLoot = entry.getValue();
+                topLooter = entry.getKey();
+            }
+        }
+        
+        if (topLooter != null) {
+            Player player = Bukkit.getPlayer(topLooter);
+            if (player != null && player.isOnline()) {
+                int duration = airDrop.getTopLooterGlowDuration() * 20;
+                player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, duration, 0, false, false));
+            }
+        }
+    }
+
+    public Map<UUID, Integer> getLootCount() {
+        return lootCount;
     }
 
     @EventHandler
@@ -81,6 +113,10 @@ public class AntiSteal implements Listener {
                 applyCooldownToAllItems(player, event.getInventory(), cooldownTicks);
             }
             chestStealDataMap.put(player.getUniqueId(), chestStealData);
+            
+            if (event.getCurrentItem() != null && !event.getCurrentItem().getType().isAir()) {
+                trackLoot(player, event.getCurrentItem().getAmount());
+            }
         }
     }
     public void unregister(){

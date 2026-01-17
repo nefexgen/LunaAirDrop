@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 
@@ -68,6 +69,15 @@ public class InteractListener implements Listener {
                 }
                 airDrop.setWasOpened(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        if (e.getBlock() == null) return;
+        AirDrop airDrop = AirManager.getAirDropForLocation(e.getBlock().getLocation());
+        if (airDrop != null && airDrop.isAirDropStarted()) {
+            e.setCancelled(true);
         }
     }
 }
