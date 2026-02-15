@@ -1,0 +1,94 @@
+package org.by1337.bairdrop.listeners;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.inventory.Inventory;
+
+import org.by1337.bairdrop.AirDrop;
+import org.by1337.bairdrop.api.event.AirDropOpenEvent;
+import org.by1337.bairdrop.customListeners.CustomEvent;
+import org.by1337.bairdrop.hologram.HologramManager;
+import org.by1337.bairdrop.util.AirManager;
+import org.by1337.bairdrop.util.DecoyManager;
+
+import java.util.HashMap;
+import java.util.UUID;
+
+public class InteractListener implements Listener {
+    private final HashMap<UUID, Long> auntyDouble = new HashMap<>();
+    @EventHandler
+    public void PlayerClick(PlayerInteractEvent e) {
+        Player pl = e.getPlayer();
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null) {
+            AirDrop airDrop = AirManager.getAirDropForLocation(e.getClickedBlock().getLocation());
+
+            if(airDrop == null)
+                return;
+            e.setCancelled(true);
+            if(auntyDouble.getOrDefault(e.getPlayer().getUniqueId(), 0L) > System.currentTimeMillis()){
+                return;
+            }else {
+                auntyDouble.put(e.getPlayer().getUniqueId(), System.currentTimeMillis() + 20L);
+            }
+            if(!airDrop.isAirDropStarted()){
+                return;
+            }
+            if(airDrop.isStartCountdownAfterClick() && !airDrop.isActivated()){
+                airDrop.setActivated(true);
+                airDrop.setTimeStop((int) (airDrop.getTimeToStopCons() * 60));
+                airDrop.notifyObservers(CustomEvent.ACTIVATE, pl);
+                return;
+            }
+
+            if(airDrop.isAirDropLocked()){
+                airDrop.notifyObservers(CustomEvent.CLICK_CLOSE, pl);
+            }else {
+                if (airDrop.getSpreadingItemsManager() != null && 
+                    airDrop.getSpreadingItemsManager().isEnabled() && 
+                    "OPEN".equalsIgnoreCase(airDrop.getSpreadingItemsManager().getTrigger())) {
+                    return;
+                }
+                AirDropOpenEvent airDropOpenEvent = new AirDropOpenEvent(airDrop, pl);
+                Bukkit.getServer().getPluginManager().callEvent(airDropOpenEvent);
+                if(airDropOpenEvent.isCancelled())
+                    return;
+                if (DecoyManager.isEnabled(airDrop)) {
+                    DecoyManager decoyManager = airDrop.getDecoyManager();
+                    if (decoyManager == null) {
+                        decoyManager = new DecoyManager(airDrop);
+                        airDrop.setDecoyManager(decoyManager);
+                    }
+                    Inventory decoyInventory = decoyManager.createDecoyInventory(pl);
+                    pl.openInventory(decoyInventory);
+                } else {
+                    pl.openInventory(airDrop.getInventory());
+                }
+                airDrop.notifyObservers(CustomEvent.CLICK_OPEN, pl);
+                if(!airDrop.isWasOpened()) {
+                    airDrop.notifyObservers(CustomEvent.FIRST_OPEN, pl);
+                }
+                airDrop.setWasOpened(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        if (e.getBlock() == null) return;
+        AirDrop airDrop = AirManager.getAirDropForLocation(e.getBlock().getLocation());
+        if (airDrop != null && airDrop.isAirDropStarted()) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent e) {
+        HologramManager.onChunkLoad(e.getChunk());
+    }
+}

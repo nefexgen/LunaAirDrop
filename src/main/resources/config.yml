@@ -1,0 +1,164 @@
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║                                LunaAirDrop                                 ║
+# ║                        by Storm (Discord: stormsms)                        ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+# ┌────────────────────────────────────────────────┐
+# │               Основные настройки               │
+# └────────────────────────────────────────────────┘
+
+language: ru # ru/en
+use-metrics: false
+debug: false
+log-level: LOW
+state-serializable: true
+
+anti-steal:
+  enable: true
+  show-message: false
+  show-cooldown-on-click: true
+  max-interval: 5
+  max-warnings: 5
+  min-interval-to-ignore: 250
+  cooldown: 200            # мс
+
+global-time:
+  enable: false
+  time: 90
+
+delay-command:
+  aliases:
+    - event
+    - events
+
+gps-command:
+  aliases:
+    - gps
+
+airdrop-navigator:
+  enabled: true
+  rounded-distance: false # Округлять дистанцию (2000m -> 1900m -> 1800m...)
+  bossbar-settings:
+    message: '&7[&#00B7EC%distance%m&7] &fНаправление аир-дропа: &7[&#00B7EC%direction%&7]'
+    interval: 5
+    color: BLUE
+    style: SOLID
+
+settings:
+  world-guard-flags:
+    allow-flags:
+      - use
+      - pvp
+      - chest-access
+    deny-flags:
+      - creeper-explosion
+      - tnt
+      - fire-spread
+      - lava-fire
+      - other-explosion
+
+# ┌────────────────────────────────────────────────┐
+# │              Призывающие аирдропы              │
+# └────────────────────────────────────────────────┘
+
+summoner-cooldown: 1200    # в тиках
+
+summoner:
+  # Пример предмета 1
+  item-1:
+    material: SOUL_CAMPFIRE
+    name: '&aМаяк аирдропа'
+    lore:
+      - '&7ПКМ чтобы призвать'
+      - '&7аирдроп на вашу позицию'
+    nbt: null
+    airdrop: RANDOM        # ID аирдропа или RANDOM
+    clone: true
+    use-player-location: true
+    check-up-blocks: false
+    flatness-check: false
+    ignore-region: false
+    min-y: 0
+    max-y: 0
+    call: []
+
+  # Пример предмета 2
+  item-2:
+    material: SOUL_CAMPFIRE
+    name: '&aМаяк аирдропа'
+    lore:
+      - '&7ПКМ чтобы призвать'
+      - '&7аирдроп в случайном месте'
+    nbt: null
+    airdrop: RANDOM
+    clone: true
+    use-player-location: false
+    flatness-check: false
+    ignore-region: false
+    min-y: 0
+    max-y: 0
+    call: []
+
+# ┌────────────────────────────────────────────────┐
+# │                Кастомные крафты                │
+# └────────────────────────────────────────────────┘
+
+custom-crafts:
+  enable: false
+  crafts:
+    craft-1:
+      summoner: item-1     # ID предмета из секции выше
+      ingredients:
+        A: DIAMOND
+        B: BEDROCK
+      slots:
+        top: AAA
+        middle: ABA
+        bottom: AAA
+
+# ┌────────────────────────────────────────────────┐
+# │                Компас аирдропов                │
+# └────────────────────────────────────────────────┘
+
+compass:
+  material: COMPASS
+  item-name: '&aКомпас аирдропов'
+  item-lore: '&7Указывает на ближайший аирдроп'
+  line-max-distance: 10
+  particle-step: 0.2
+  particle-color: '255:0:0'  # Формат RGB
+  particle-size: 3
+  message-not-found: '&cНет активных аирдропов! &7Следующий через %bairdrop_time_start_format%'
+  message-found: null
+
+# ┌────────────────────────────────────────────────┐
+# │                Авто зачарование                │
+# └────────────────────────────────────────────────┘
+
+auto-enchant:
+  enable: false
+  
+  # Пример: Незеритовая кирка с эффективностью/удачей
+  pickaxe-fortune:
+    material: NETHERITE_PICKAXE
+    efficiency:
+      chance: 70           # % шанс применения
+      min-level: 2
+      max-level: 5
+    fortune:
+      chance: 30
+      min-level: 1
+      max-level: 2
+    conflict-enchant:      # Не применится если есть эти чары
+      - silk_touch
+  
+  # Пример: Незеритовая кирка с шёлковым касанием
+  pickaxe-silk:
+    material: NETHERITE_PICKAXE
+    silk_touch:
+      chance: 70
+      min-level: 1
+      max-level: 1
+    conflict-enchant:
+      - fortune
+      - efficiency

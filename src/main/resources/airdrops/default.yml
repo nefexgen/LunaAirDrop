@@ -1,0 +1,603 @@
+# ┌────────────────────────────────────────────────┐
+# │               Основные настройки               │
+# └────────────────────────────────────────────────┘
+air-id: 'default' # ID аирдропа
+air-name: '<b><gradient:#FF2F2F:#E56EFF>Мистический сундук</gradient></b>' # Название аирдропа
+inv-name: '<b><gradient:#FF2F2F:#E56EFF>Мистический сундук</gradient></b>' # Название инвентаря
+event-list-name: '&6Мистический сундук' # Название в /event delay и /gps
+chest-inventory-size: 54 # Размер инвентаря (9, 18, 27, 36, 45, 54)
+
+chest-material-locked: ENDER_CHEST # Блок закрытого аирдропа
+chest-material-unlocked: ENDER_CHEST # Блок открытого аирдропа
+block-facing: NONE # Направление блока (NORTH, SOUTH, EAST, WEST, NONE - случайное)
+
+# ┌────────────────────────────────────────────────┐
+# │              Настройки локации                 │
+# └────────────────────────────────────────────────┘
+spawn-chance: 50 # Шанс спавна при случайном выборе
+air-spawn-world: world # Мир для спавна
+air-spawn-radius-min: -2000 # Минимальный радиус спавна от центра мира
+air-spawn-radius-max: 2000 # Максимальный радиус спавна от центра мира
+air-radius-protect: 15 # Радиус защитного региона (WorldGuard)
+generator-settings: default # Настройки генератора локаций (generator.yml)
+flatness-check: false # Проверять ровность поверхности
+
+use-static-loc: false # Использовать статическую локацию как альтернативу
+use-only-static-loc: false # Использовать ТОЛЬКО статическую локацию
+static-location:
+  world: world
+  x: 0.0
+  y: 0.0
+  z: 0.0
+
+# ┌────────────────────────────────────────────────┐
+# │                  Таймеры                       │
+# └────────────────────────────────────────────────┘
+timeToStart: 2m # Время до появления (формат: 1h 30m 20s)
+search-before-start: 1m # Время поиска локации перед стартом
+openingTime: 1m # Время до открытия аирдропа
+time-stop-event: 1m # Время до исчезновения после открытия
+
+scheduled-time: # Запуск по расписанию
+  enabled: false
+  times: # Список времён запуска (формат 24ч)
+    - '12:00'
+    - '18:00'
+
+# ┌────────────────────────────────────────────────┐
+# │              Поведение аирдропа                │
+# └────────────────────────────────────────────────┘
+start-countdown-after-click: false # Начать отсчёт открытия после клика по сундуку
+auto-activate: false # Авто-активация если не активирован вручную (время - openingTime)
+time-stop-event-must-go: false # Таймер исчезновения идёт даже если сундук закрыт
+stop-when-empty: false # Исчезнуть когда инвентарь пуст
+min-online-players: 1 # Минимум игроков онлайн для спавна
+random-slot: true # Случайное расположение предметов в инвентаре
+
+# ┌────────────────────────────────────────────────┐
+# │                 Голограммы                     │
+# └────────────────────────────────────────────────┘
+holograms: armorstand # Тип голограммы (textdisplay / armorstand)
+
+holo-offsets: # Смещение голограммы относительно блока
+  x: 0.5
+  y: 1.5
+  z: 0.5
+
+holo-settings: # Настройки голограммы (только для textdisplay)
+  text-shadow: true           # Тень текста
+  text-opacity: 100           # Прозрачность текста (0-100)
+  background-color: '#000000' # Цвет фона в формате HEX
+  background-opacity: 0       # Прозрачность фона (0-100)
+  see-through: false          # Видно ли через блоки
+  view-range: 32.0            # Дальность видимости (в блоках)
+  brightness: 15              # Яркость (0-15, -1 для авто)
+  scale: 1.0                  # Масштаб
+  text-alignment: CENTER      # Выравнивание текста (LEFT, CENTER, RIGHT)
+  billboard: CENTER           # Фиксированный поворот (CENTER, FIXED, VERTICAL, HORIZONTAL)
+  yaw: 0.0                    # Поворот по горизонтали (только при billboard: FIXED)
+  pitch: 0.0                  # Поворот по вертикали (только при billboard: FIXED)
+
+air-holo-to-start: # Голограмма до появления
+  - '{air-name}'
+  - '&fДо появления: &6{time-to-start} сек'
+air-holo: # Голограмма когда аирдроп закрыт
+  - '{air-name}'
+  - '&cЗакрыт!'
+  - '&fДо открытия: &6{time-to-open} сек'
+air-holo-open: # Голограмма когда аирдроп открыт
+  - '{air-name}'
+  - '&aОткрыт!'
+air-holo-click-wait: # Голограмма ожидания клика (start-countdown-after-click: true)
+  - '{air-name}'
+  - '&7Нажмите для активации'
+
+# ┌────────────────────────────────────────────────┐
+# │                   BossBar                      │
+# └────────────────────────────────────────────────┘
+bossbar: # BossBar аирдропа
+  enabled: true
+  visibility: radius # radius или global
+  radius: 30 # Радиус видимости (только для visibility: radius)
+  color: RED # Цвет: BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW
+  style: SEGMENTED_20 # Стиль полоски: SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
+  title-closed: '&6Мистик откроется через &c{time-to-open} сек'
+  title-open: '&6Мистик открыт. До удаления &c{time-stop} сек'
+  title-activate: '&6Мистик активируется через &c{auto-activate-timer} сек'
+  title-not-activated: '&6Мистик не активирован'
+
+# ┌────────────────────────────────────────────────┐
+# │            Разбрасывание предметов             │
+# │         Доступно только в LunaAirDropX         │
+# └────────────────────────────────────────────────┘
+# spreading-items:
+#   enable: false
+#   trigger: OPEN
+#   velocity:
+#     horizontal: 0.5-1.0
+#     vertical: 0.8-1.2
+#   spread-angle: 360
+#   delay-between-items: 4
+#   pickup-delay: 80
+#   visual-fire: true
+#   obfuscate-items: false
+#   glow:
+#     enabled: false
+#     color: YELLOW
+#     after-end: false
+#   hologram:
+#     enabled: true
+#     type: textdisplay
+#     after-end: false
+#     height: 0.7
+#     update-interval: 2
+#   particle:
+#     enabled: true
+#     type: FLAME
+#     count: 1
+#   sound:
+#     enabled: true
+#     sound: entity.item.pickup
+#     volume: 1.0
+#     pitch: 0.8-1.2
+#   knockback:
+#     enabled: false
+#     range: 10.0
+#     strength: 1.5
+#     interval: 5
+
+# ┌────────────────────────────────────────────────┐
+# │            Дополнительные функции              │
+# └────────────────────────────────────────────────┘
+decoy-protection: # Фейковые предметы
+  enable: false
+  hide-tooltip: false # Скрыть информацию о предмете
+  fake-items: # Материалы фейковых предметов
+    - GUNPOWDER
+    - PHANTOM_MEMBRANE
+    - NAUTILUS_SHELL
+    - GRAY_DYE
+  fake-names: # Названия фейковых предметов
+    - '&eКость пирата'
+    - '&6Рога мамонта'
+    - '&6Битая ваза'
+    - '&cБогатое сокровище'
+
+top-looter-glow: # Подсветка игрока с наибольшим лутом (только при stop-when-empty: true)
+  enabled: false
+  duration: 10 # Длительность (в секундах)
+
+item-reveal: # Плавное появление предметов после открытия
+  enabled: true
+  items-per-step: 3-4 # Количество предметов за шаг (мин-макс)
+  interval: 0.4 # Интервал между шагами (в секундах)
+  step-sound: # Звук при появлении предметов
+    enabled: true
+    sound: block.amethyst_cluster.fall # ID звука
+    volume: 0.8 # Громкость (0.0 - 1.0)
+    pitch: 0.9-1.1 # Pitch (0.5 - 2.0, можно указать диапазон мин-макс для рандома)
+    radius: 0 # Радиус звука в блоках (0 - только при открытом инвентаре аирдропа)
+
+# ┌────────────────────────────────────────────────┐
+# │              События (listeners)               │
+# └────────────────────────────────────────────────┘
+signed-events: # Подключённые слушатели (listeners.yml)
+  - chest-closed
+  - spawn-particle
+  - alert-start
+  - spawn-summoner-alert
+  - ACTIVATE
+  - alert-4
+  - alert
+  - alert-5
+  - alert-end
+  - end
+  - alert-open
+  - spawn-summoner
+
+# --------------------------------------------------
+inv: # Предметы в инвентаре (слот -> шанс -> предмет)
+  'Редактирование наград &cаирдропа':
+    '0':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND_HELMET
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            PROTECTION: 3
+            UNBREAKING: 3
+    '1':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND_CHESTPLATE
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            PROTECTION: 3
+            UNBREAKING: 3
+    '2':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND_LEGGINGS
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            PROTECTION: 3
+            UNBREAKING: 3
+    '3':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND_BOOTS
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            PROTECTION: 3
+            UNBREAKING: 3
+    '4':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND_SWORD
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            FIRE_ASPECT: 1
+            SHARPNESS: 4
+            UNBREAKING: 2
+    '5':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND_AXE
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            EFFICIENCY: 3
+            UNBREAKING: 2
+    '6':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND_PICKAXE
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            EFFICIENCY: 3
+            UNBREAKING: 2
+    '7':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND_SHOVEL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            EFFICIENCY: 3
+            UNBREAKING: 2
+    '8':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND_HOE
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            EFFICIENCY: 3
+            UNBREAKING: 2
+    '9':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_HELMET
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            PROTECTION: 4
+            UNBREAKING: 3
+    '10':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_CHESTPLATE
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            PROTECTION: 4
+            UNBREAKING: 3
+    '11':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_LEGGINGS
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            PROTECTION: 4
+            UNBREAKING: 3
+    '12':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_BOOTS
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            PROTECTION: 4
+            UNBREAKING: 3
+    '13':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_SWORD
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            FIRE_ASPECT: 2
+            SHARPNESS: 5
+            UNBREAKING: 3
+    '14':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_AXE
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            EFFICIENCY: 5
+            UNBREAKING: 3
+    '15':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_PICKAXE
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            EFFICIENCY: 5
+            UNBREAKING: 3
+    '16':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_SHOVEL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            EFFICIENCY: 5
+            UNBREAKING: 3
+    '17':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_HOE
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            EFFICIENCY: 5
+            UNBREAKING: 3
+    '18':
+      '75':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: EMERALD
+        amount: 32
+    '19':
+      '55':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ENCHANTED_GOLDEN_APPLE
+        amount: 2
+    '20':
+      '80':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: COOKED_BEEF
+        amount: 64
+    '21':
+      '45':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: TOTEM_OF_UNDYING
+    '22':
+      '80':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: EXPERIENCE_BOTTLE
+        amount: 16
+    '23':
+      '60':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: GOLDEN_APPLE
+        amount: 8
+    '24':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_INGOT
+        amount: 2
+    '25':
+      '50':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ELYTRA
+    '26':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: SHIELD
+    '27':
+      '50':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: NETHERITE_SCRAP
+        amount: 4
+    '28':
+      '65':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DIAMOND
+        amount: 16
+    '29':
+      '65':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: OBSIDIAN
+        amount: 32
+    '30':
+      '55':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: TNT
+        amount: 16
+    '31':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ARROW
+        amount: 64
+    '32':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ENDER_PEARL
+        amount: 4
+    '33':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: FIREWORK_ROCKET
+        amount: 64
+    '34':
+      '50':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: SOUL_LANTERN
+        amount: 2
+    '35':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: SOUL_LANTERN
+    '36':
+      '30':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ZOMBIE_VILLAGER_SPAWN_EGG
+    '37':
+      '70':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: PIG_SPAWN_EGG
+    '38':
+      '50':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: PIG_SPAWN_EGG
+        amount: 2
+    '39':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: PIG_SPAWN_EGG
+        amount: 3
+    '40':
+      '60':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: BLAZE_SPAWN_EGG
+    '41':
+      '50':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: BLAZE_SPAWN_EGG
+        amount: 2
+    '42':
+      '40':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: BLAZE_SPAWN_EGG
+        amount: 3
+    '43':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: DRAGON_HEAD
+    '44':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: WITHER_SKELETON_SKULL
+    '45':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ENCHANTED_BOOK
+        meta:
+          ==: ItemMeta
+          meta-type: ENCHANTED
+          stored-enchants:
+            MENDING: 1
+    '46':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ENCHANTED_BOOK
+        meta:
+          ==: ItemMeta
+          meta-type: ENCHANTED
+          stored-enchants:
+            PROTECTION: 1
+    '47':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ENCHANTED_BOOK
+        meta:
+          ==: ItemMeta
+          meta-type: ENCHANTED
+          stored-enchants:
+            PROTECTION: 2
+    '48':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ENCHANTED_BOOK
+        meta:
+          ==: ItemMeta
+          meta-type: ENCHANTED
+          stored-enchants:
+            PROTECTION: 3
+    '49':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 4082
+        type: ENCHANTED_BOOK
+        meta:
+          ==: ItemMeta
+          meta-type: ENCHANTED
+          stored-enchants:
+            PROTECTION: 4
