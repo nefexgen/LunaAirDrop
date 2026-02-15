@@ -131,6 +131,15 @@ bossbar: # BossBar аирдропа
 #     after-end: false
 #     height: 0.7
 #     update-interval: 2
+#     settings: # Настройки голограмм (только для textdisplay)
+#       text-shadow: true
+#       text-opacity: 100
+#       background-color: '#000000'
+#       background-opacity: 0
+#       see-through: false
+#       view-range: 32.0
+#       brightness: 15
+#       scale: 1.0
 #   particle:
 #     enabled: true
 #     type: FLAME
