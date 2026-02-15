@@ -112,25 +112,25 @@ bossbar: # BossBar аирдропа
 # └────────────────────────────────────────────────┘
 # spreading-items:
 #   enable: false
-#   trigger: OPEN
+#   trigger: OPEN # Когда разбрасывать: END (в конце), OPEN (при открытии)
 #   velocity:
-#     horizontal: 0.5-1.0
-#     vertical: 0.8-1.2
-#   spread-angle: 360
-#   delay-between-items: 4
-#   pickup-delay: 80
-#   visual-fire: true
-#   obfuscate-items: false
+#     horizontal: 0.5-1.0 # Горизонтальная скорость (мин-макс)
+#     vertical: 0.8-1.2 # Вертикальная скорость (мин-макс)
+#   spread-angle: 360 # Угол разброса
+#   delay-between-items: 4 # Задержка между выбросами предметов (в тиках)
+#   pickup-delay: 80 # Задержка перед возможностью подобрать (в тиках)
+#   visual-fire: true # Визуальный эффект горения предметов
+#   obfuscate-items: false # Маскировка предметов (только при decoy-protection: true)
 #   glow:
 #     enabled: false
-#     color: YELLOW
-#     after-end: false
+#     color: YELLOW # Цвет или RANDOM
+#     after-end: false # Включать подсветку только после окончания разбрасывания
 #   hologram:
 #     enabled: true
-#     type: textdisplay
-#     after-end: false
-#     height: 0.7
-#     update-interval: 2
+#     type: textdisplay # textdisplay / armorstand
+#     after-end: false # Показывать голограммы только после окончания разбрасывания
+#     height: 0.7 # Высота голограммы над предметом
+#     update-interval: 2 # Интервал обновления (в тиках)
 #     settings: # Настройки голограмм (только для textdisplay)
 #       text-shadow: true
 #       text-opacity: 100
@@ -141,19 +141,24 @@ bossbar: # BossBar аирдропа
 #       brightness: 15
 #       scale: 1.0
 #   particle:
-#     enabled: true
+#     enabled: true # Партиклы за летящими предметами
 #     type: FLAME
-#     count: 1
+#     count: 1 # Количество частиц за тик
+#     offset:
+#       x: 0.1
+#       y: 0.1
+#       z: 0.1
+#     speed: 0.01
 #   sound:
 #     enabled: true
 #     sound: entity.item.pickup
 #     volume: 1.0
 #     pitch: 0.8-1.2
-#   knockback:
+#   knockback: # Отбрасывание игроков от блока аирдропа
 #     enabled: false
-#     range: 10.0
-#     strength: 1.5
-#     interval: 5
+#     range: 10.0 # Радиус действия (в блоках)
+#     strength: 1.5 # Сила отбрасывания
+#     interval: 5 # Интервал в тиках (20 тиков = 1 секунда)
 
 # ┌────────────────────────────────────────────────┐
 # │            Дополнительные функции              │
