@@ -441,12 +441,6 @@ main:
     material: BLACK_STAINED_GLASS_PANE
     lore:
       - ''
-  glasspane37:
-    slot: 37
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
-    lore:
-      - ''
   glasspane43:
     slot: 43
     name: ' '
@@ -459,27 +453,26 @@ main:
     material: BLACK_STAINED_GLASS_PANE
     lore:
       - ''
-  glasspane45:
-    slot: 45
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
-    lore:
-      - ''
-  glasspane46:
+  editEventListName:
     slot: 46
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
+    name: '&eEvent List Name'
+    material: NAME_TAG
     lore:
       - ''
-  glasspane52:
+      - '&8▸ &7Current: &f{event-list-name}'
+      - ''
+      - '&a▶ LMB &8- &7Change'
+    commands:
+      LEFT-CLICK:
+        - '[change-EventListName]'
+  spreadingItems:
     slot: 52
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
+    name: '&#FF5555S&#FF802Bp&#FFAA00r&#FFC61Ce&#FFE339a&#FFFF55d&#AAFF55i&#55FF55n&#55FFAAg &#71AAE3i&#8E55C6t&#AA00AAe&#D52BD5m&#FF55FFs'
+    material: WIND_CHARGE
     lore:
       - ''
-  glasspane53:
-    slot: 53
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
-    lore:
+      - ' &8□ xxxxxxxxx: xxxx'
+      - ' &8□ xxxxxxx: xx'
+      - ' &8□ xxxxx: xx'
       - ''
+      - '&8(Only LunaAirDropX)'

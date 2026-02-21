@@ -934,6 +934,14 @@ public class ExecuteCommands {
                 getServer().getPluginManager().registerEvents(lc, BAirDrop.getInstance());
                 pl.closeInventory();
             }
+            if (str.equalsIgnoreCase("[change-EventListName]")) {
+                pl.closeInventory();
+                if (ListenChat.ListenChat != null)
+                    ListenChat.ListenChat.unReg();
+                ListenChat lc = new ListenChat(airDrop, "eventlistname", pl);
+                getServer().getPluginManager().registerEvents(lc, BAirDrop.getInstance());
+                pl.closeInventory();
+            }
             if (str.equalsIgnoreCase("[change-invname]")) {
                 pl.closeInventory();
                 if (ListenChat.ListenChat != null)

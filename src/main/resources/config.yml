@@ -1,5 +1,5 @@
 # ╔════════════════════════════════════════════════════════════════════════════╗
-# ║                              BAirDropS v1.1.2                              ║
+# ║                                LunaAirDrop                                 ║
 # ║                        by Storm (Discord: stormsms)                        ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 
@@ -26,10 +26,36 @@ global-time:
   enable: false
   time: 90
 
+# Доступно только в LunaAirDropX
+
+# scheduled-global-timer:
+#   enabled: false
+#   times:
+#     - '12:00'
+#     - '18:00'
+#   airdrops: # - 'air_id:chance'
+#     - 'default:70'
+#     - 'legendary:30'
+
 delay-command:
   aliases:
     - event
     - events
+
+gps-command:
+  aliases:
+    - gps
+
+airdrop-navigator:
+  enabled: true
+  rounded-distance: false # Округлять дистанцию (2000m -> 1900m -> 1800m...)
+  rounded-scale: false # Округлять шкалу боссбара
+  ignore-height: true # Игнорировать высоту в дистанции
+  bossbar-settings:
+    message: '&7[&#00B7EC%distance%m&7] &fНаправление аир-дропа: &7[&#00B7EC%direction%&7]'
+    interval: 5
+    color: BLUE
+    style: SOLID
 
 settings:
   world-guard-flags:

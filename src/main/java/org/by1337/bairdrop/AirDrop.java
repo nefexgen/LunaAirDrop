@@ -507,6 +507,8 @@ public interface AirDrop extends Observable {
 
     boolean isDecoyProtectionEnabled();
     void setDecoyProtectionEnabled(boolean enabled);
+    boolean isDecoyHideTooltip();
+    void setDecoyHideTooltip(boolean hideTooltip);
     List<String> getDecoyFakeItems();
     void setDecoyFakeItems(List<String> items);
     List<String> getDecoyFakeNames();
@@ -517,6 +519,11 @@ public interface AirDrop extends Observable {
     HologramType getHologramType();
     void setHologramType(HologramType type);
     HologramSettings getHologramSettings();
+    org.bukkit.util.Vector getHoloOffsets();
+    void setHoloOffsets(org.bukkit.util.Vector offsets);
+
+    String getChestFacing();
+    void setChestFacing(String facing);
 
     boolean isTopLooterGlowEnabled();
     void setTopLooterGlowEnabled(boolean enabled);
@@ -528,4 +535,6 @@ public interface AirDrop extends Observable {
     void setScheduledTimeEnabled(boolean enabled);
 
     boolean isAutoActivateEnabled();
+
+    org.by1337.bairdrop.bossbar.AirDropBossBar getAirDropBossBar();
 }

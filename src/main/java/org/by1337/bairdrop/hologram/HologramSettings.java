@@ -94,15 +94,27 @@ public class HologramSettings {
     }
 
     public boolean isTextShadow() { return textShadow; }
+    public void setTextShadow(boolean textShadow) { this.textShadow = textShadow; }
     public byte getTextOpacity() { return textOpacity; }
+    public void setTextOpacity(byte textOpacity) { this.textOpacity = textOpacity; }
     public Color getBackgroundColor() { return backgroundColor; }
+    public void setBackgroundColor(Color backgroundColor) { this.backgroundColor = backgroundColor; }
     public int getBackgroundOpacity() { return backgroundOpacity; }
+    public void setBackgroundOpacity(int backgroundOpacity) { this.backgroundOpacity = backgroundOpacity; }
     public boolean isSeeThrough() { return seeThrough; }
+    public void setSeeThrough(boolean seeThrough) { this.seeThrough = seeThrough; }
     public float getViewRange() { return viewRange; }
+    public void setViewRange(float viewRange) { this.viewRange = viewRange; }
     public float getScale() { return scale; }
+    public void setScale(float scale) { this.scale = scale; }
     public int getBrightness() { return brightness; }
+    public void setBrightness(int brightness) { this.brightness = brightness; }
     public Display.Billboard getBillboard() { return billboard; }
+    public void setBillboard(Display.Billboard billboard) { this.billboard = billboard; }
     public TextDisplay.TextAlignment getTextAlignment() { return textAlignment; }
+    public void setTextAlignment(TextDisplay.TextAlignment textAlignment) { this.textAlignment = textAlignment; }
     public float getYaw() { return yaw; }
+    public void setYaw(float yaw) { this.yaw = yaw; }
     public float getPitch() { return pitch; }
+    public void setPitch(float pitch) { this.pitch = pitch; }
 }

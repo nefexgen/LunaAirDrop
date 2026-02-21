@@ -1,20 +1,19 @@
 # ┌────────────────────────────────────────────────┐
 # │               Основные настройки               │
 # └────────────────────────────────────────────────┘
-
 air-id: 'default' # ID аирдропа
 air-name: '<b><gradient:#FF2F2F:#E56EFF>Мистический сундук</gradient></b>' # Название аирдропа
 inv-name: '<b><gradient:#FF2F2F:#E56EFF>Мистический сундук</gradient></b>' # Название инвентаря
-event-list-name: '&6Мистический сундук' # Название в /event delay
+event-list-name: '&6Мистический сундук' # Название в /event delay и /gps
 chest-inventory-size: 54 # Размер инвентаря (9, 18, 27, 36, 45, 54)
 
 chest-material-locked: ENDER_CHEST # Блок закрытого аирдропа
 chest-material-unlocked: ENDER_CHEST # Блок открытого аирдропа
+block-facing: NONE # Направление блока (NORTH, SOUTH, EAST, WEST, NONE - случайное)
 
 # ┌────────────────────────────────────────────────┐
 # │              Настройки локации                 │
 # └────────────────────────────────────────────────┘
-
 spawn-chance: 50 # Шанс спавна при случайном выборе
 air-spawn-world: world # Мир для спавна
 air-spawn-radius-min: -2000 # Минимальный радиус спавна от центра мира
@@ -34,7 +33,6 @@ static-location:
 # ┌────────────────────────────────────────────────┐
 # │                  Таймеры                       │
 # └────────────────────────────────────────────────┘
-
 timeToStart: 2m # Время до появления (формат: 1h 30m 20s)
 search-before-start: 1m # Время поиска локации перед стартом
 openingTime: 1m # Время до открытия аирдропа
@@ -49,7 +47,6 @@ scheduled-time: # Запуск по расписанию
 # ┌────────────────────────────────────────────────┐
 # │              Поведение аирдропа                │
 # └────────────────────────────────────────────────┘
-
 start-countdown-after-click: false # Начать отсчёт открытия после клика по сундуку
 auto-activate: false # Авто-активация если не активирован вручную (время - openingTime)
 time-stop-event-must-go: false # Таймер исчезновения идёт даже если сундук закрыт
@@ -60,7 +57,6 @@ random-slot: true # Случайное расположение предмето
 # ┌────────────────────────────────────────────────┐
 # │                 Голограммы                     │
 # └────────────────────────────────────────────────┘
-
 holograms: armorstand # Тип голограммы (textdisplay / armorstand)
 
 holo-offsets: # Смещение голограммы относительно блока
@@ -99,7 +95,6 @@ air-holo-click-wait: # Голограмма ожидания клика (start-c
 # ┌────────────────────────────────────────────────┐
 # │                   BossBar                      │
 # └────────────────────────────────────────────────┘
-
 bossbar: # BossBar аирдропа
   enabled: true
   visibility: radius # radius или global
@@ -112,11 +107,85 @@ bossbar: # BossBar аирдропа
   title-not-activated: '&6Мистик не активирован'
 
 # ┌────────────────────────────────────────────────┐
+# │            Разбрасывание предметов             │
+# │         Доступно только в LunaAirDropX         │
+# └────────────────────────────────────────────────┘
+# spreading-items:
+#   enable: false
+#   trigger: OPEN # Когда разбрасывать: END (в конце), OPEN (при открытии)
+#   velocity:
+#     horizontal: 0.5-1.0 # Горизонтальная скорость (мин-макс)
+#     vertical: 0.8-1.2 # Вертикальная скорость (мин-макс)
+#   spread-angle: 360 # Угол разброса
+#   delay-between-items: 4 # Задержка между выбросами предметов (в тиках)
+#   pickup-delay: 80 # Задержка перед возможностью подобрать (в тиках)
+#   visual-fire: true # Визуальный эффект горения предметов
+#   obfuscate-items: false # Маскировка предметов (только при decoy-protection: true)
+#   glow:
+#     enabled: false
+#     color: YELLOW # Цвет или RANDOM
+#     after-end: false # Включать подсветку только после окончания разбрасывания
+#   hologram:
+#     enabled: true
+#     type: textdisplay # textdisplay / armorstand
+#     after-end: false # Показывать голограммы только после окончания разбрасывания
+#     height: 0.7 # Высота голограммы над предметом
+#     update-interval: 2 # Интервал обновления (в тиках)
+#     settings: # Настройки голограмм (только для textdisplay)
+#       text-shadow: true
+#       text-opacity: 100
+#       background-color: '#000000'
+#       background-opacity: 0
+#       see-through: false
+#       view-range: 32.0
+#       brightness: 15
+#       scale: 1.0
+#   particle:
+#     enabled: true # Партиклы за летящими предметами
+#     type: FLAME
+#     count: 1 # Количество частиц за тик
+#     offset:
+#       x: 0.1
+#       y: 0.1
+#       z: 0.1
+#     speed: 0.01
+#   sound:
+#     enabled: true
+#     sound: entity.item.pickup
+#     volume: 1.0
+#     pitch: 0.8-1.2
+#   knockback: # Отбрасывание игроков от блока аирдропа
+#     enabled: false
+#     range: 10.0 # Радиус действия (в блоках)
+#     strength: 1.5 # Сила отбрасывания
+#     interval: 5 # Интервал в тиках (20 тиков = 1 секунда)
+
+# ┌────────────────────────────────────────────────┐
+# │              Редкости инвентарей               │
+# │         Доступно только в LunaAirDropX         │
+# └────────────────────────────────────────────────┘
+# inventory-rarities:
+#   enabled: false
+#   rarities:
+#     common:
+#       display-name: '&7Обычный' # Название редкости (плейсхолдер - {rarity})
+#       chance: 60 # Шанс выпадения (относительный вес)
+#       inventory: 'inv_common' # Имя инвентаря из секции inv
+#     epic:
+#       display-name: '&5Эпический'
+#       chance: 30
+#       inventory: 'inv_epic'
+#     legendary:
+#       display-name: '&eЛегендарный'
+#       chance: 10
+#       inventory: 'inv_legendary'
+
+# ┌────────────────────────────────────────────────┐
 # │            Дополнительные функции              │
 # └────────────────────────────────────────────────┘
-
 decoy-protection: # Фейковые предметы
   enable: false
+  hide-tooltip: false # Скрыть информацию о предмете
   fake-items: # Материалы фейковых предметов
     - GUNPOWDER
     - PHANTOM_MEMBRANE
@@ -146,7 +215,6 @@ item-reveal: # Плавное появление предметов после �
 # ┌────────────────────────────────────────────────┐
 # │              События (listeners)               │
 # └────────────────────────────────────────────────┘
-
 signed-events: # Подключённые слушатели (listeners.yml)
   - chest-closed
   - spawn-particle
@@ -161,6 +229,7 @@ signed-events: # Подключённые слушатели (listeners.yml)
   - alert-open
   - spawn-summoner
 
+# --------------------------------------------------
 inv: # Предметы в инвентаре (слот -> шанс -> предмет)
   'Редактирование наград &cаирдропа':
     '0':

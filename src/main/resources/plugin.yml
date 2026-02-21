@@ -1,4 +1,4 @@
-name: BAirDropS
+name: LunaAirDrop
 version: '${project.version}'
 main: org.by1337.bairdrop.BAirDrop
 api-version: '1.21.4'
@@ -76,4 +76,7 @@ permissions:
     default: op
   bair.delay:
     description: /bair delay
+    default: true
+  bair.gps:
+    description: /bair gps
     default: true

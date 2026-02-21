@@ -3,7 +3,10 @@ package org.by1337.bairdrop;
 import java.util.Arrays;
 import com.sk89q.worldedit.EditSession;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Lidded;
+import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -73,6 +76,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
     private int timeStop;
     private Material materialLocked;
     private Material materialUnlocked;
+    private String chestFacing = "NONE";
     private final HashMap<String, List<Items>> listItems = new HashMap<>();
     private boolean airDropLocked = true;
     private Inventory inventory;
@@ -124,6 +128,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
     private String superName;
     private List<String> dec = new ArrayList<>();
     private boolean decoyProtectionEnabled = false;
+    private boolean decoyHideTooltip = true;
     private List<String> decoyFakeItems = new ArrayList<>();
     private List<String> decoyFakeNames = new ArrayList<>();
     private boolean itemRevealEnabled = false;
@@ -220,6 +225,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
 
             materialLocked = Material.valueOf(fileConfiguration.getString("chest-material-locked"));
             materialUnlocked = Material.valueOf(fileConfiguration.getString("chest-material-unlocked"));
+            chestFacing = fileConfiguration.getString("block-facing", "NONE").toUpperCase();
             signedListener = fileConfiguration.getStringList("signed-events");
 
             signedListener = signedListener.stream().map(String::toLowerCase).collect(Collectors.toList());
@@ -232,8 +238,10 @@ public class CAirDrop implements AirDrop, StateSerializable {
             airHoloToStart = fileConfiguration.getStringList("air-holo-to-start");
             useOnlyStaticLoc = fileConfiguration.getBoolean("use-only-static-loc");
             decoyProtectionEnabled = fileConfiguration.getBoolean("decoy-protection.enable", false);
+            decoyHideTooltip = fileConfiguration.getBoolean("decoy-protection.hide-tooltip", true);
             decoyFakeItems = fileConfiguration.getStringList("decoy-protection.fake-items");
             decoyFakeNames = fileConfiguration.getStringList("decoy-protection.fake-names");
+            
             itemRevealEnabled = fileConfiguration.getBoolean("item-reveal.enabled", false);
             String itemsPerStep = fileConfiguration.getString("item-reveal.items-per-step", "3-5");
             if (itemsPerStep.contains("-")) {
@@ -492,6 +500,11 @@ public class CAirDrop implements AirDrop, StateSerializable {
                     } else if (!airDropLocked || timeStopEventMustGo && airDropStarted) {
                         timeStop--;
                         updateEditAirMenu("stats");
+                        if (!airDropLocked && hologramType != null) {
+                            List<String> lines = new ArrayList<>(airHoloOpen);
+                            lines.replaceAll(CAirDrop.this::replaceInternalPlaceholder);
+                            HologramManager.createOrUpdateHologram(lines, airDropLocation.clone().add(holoOffsets), id, hologramType, hologramSettings);
+                        }
                     }
                     notifyObservers(CustomEvent.TIMER, null);
                     if (airDropBossBar != null && airDropBossBar.isEnabled()) {
@@ -625,7 +638,9 @@ public class CAirDrop implements AirDrop, StateSerializable {
         fileConfiguration.set("air-holo-click-wait", airHoloClickWait);
         
         fileConfiguration.set("decoy-protection.enable", decoyProtectionEnabled);
+        fileConfiguration.set("decoy-protection.hide-tooltip", decoyHideTooltip);
         fileConfiguration.set("decoy-protection.fake-items", decoyFakeItems);
+        
         fileConfiguration.set("decoy-protection.fake-names", decoyFakeNames);
         
         fileConfiguration.set("item-reveal.enabled", itemRevealEnabled);
@@ -701,6 +716,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
 
         try {
             airDropLocation.getBlock().setType(materialLocked);
+            applyBlockFacing(airDropLocation.getBlock());
             if (materialLocked == Material.RESPAWN_ANCHOR) {
                 RespawnAnchor ra = (RespawnAnchor) airDropLocation.getBlock().getBlockData();
                 ra.setCharges(4);
@@ -712,7 +728,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
         }
 
 
-        if (listItems.size() == 1) {//old system
+        if (listItems.size() == 1) {
             String key = null;
             for (String str : listItems.keySet()) {
                 key = str;
@@ -736,7 +752,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
                             inventory.setItem(items.getSlot(), itemStack);
                     }
                 }
-        } else {//new system
+        } else {
             List<Items> list = new ArrayList<>();
             for (List<Items> items : listItems.values()) {
                 list.addAll(items);
@@ -822,6 +838,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
         
         try {
             airDropLocation.getBlock().setType(materialUnlocked);
+            applyBlockFacing(airDropLocation.getBlock());
             if (materialUnlocked == Material.RESPAWN_ANCHOR) {
                 RespawnAnchor ra = (RespawnAnchor) airDropLocation.getBlock().getBlockData();
                 ra.setCharges(4);
@@ -921,6 +938,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
             return;
 
         notifyObservers(CustomEvent.END_EVENT, null);
+        
         schematicsUndo();
         if (airDropLocation != null)
             airDropLocation.getBlock().setType(Material.AIR);
@@ -1179,6 +1197,11 @@ public class CAirDrop implements AirDrop, StateSerializable {
             }
             if (sb.indexOf("{air-name}") != -1){
                 sb.replace(sb.indexOf("{air-name}"), sb.indexOf("{air-name}") + 10, getDisplayName());
+                b = true;
+                continue;
+            }
+            if (sb.indexOf("{event-list-name}") != -1){
+                sb.replace(sb.indexOf("{event-list-name}"), sb.indexOf("{event-list-name}") + 17, getEventListName());
                 b = true;
                 continue;
             }
@@ -1744,6 +1767,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
 
 
                     airDropLocation.getBlock().setType(materialLocked);
+                    applyBlockFacing(airDropLocation.getBlock());
                     if (materialLocked == Material.RESPAWN_ANCHOR) {
                         RespawnAnchor ra = (RespawnAnchor) airDropLocation.getBlock().getBlockData();
                         ra.setCharges(4);
@@ -1762,6 +1786,7 @@ public class CAirDrop implements AirDrop, StateSerializable {
                         timeToOpen = 0;
 
                         airDropLocation.getBlock().setType(materialUnlocked);
+                        applyBlockFacing(airDropLocation.getBlock());
                         if (materialUnlocked == Material.RESPAWN_ANCHOR) {
                             RespawnAnchor ra = (RespawnAnchor) airDropLocation.getBlock().getBlockData();
                             ra.setCharges(4);
@@ -2327,6 +2352,16 @@ public class CAirDrop implements AirDrop, StateSerializable {
     }
 
     @Override
+    public boolean isDecoyHideTooltip() {
+        return decoyHideTooltip;
+    }
+
+    @Override
+    public void setDecoyHideTooltip(boolean hideTooltip) {
+        this.decoyHideTooltip = hideTooltip;
+    }
+
+    @Override
     public List<String> getDecoyFakeItems() {
         return decoyFakeItems;
     }
@@ -2374,6 +2409,26 @@ public class CAirDrop implements AirDrop, StateSerializable {
     @Override
     public HologramSettings getHologramSettings() {
         return hologramSettings;
+    }
+
+    @Override
+    public Vector getHoloOffsets() {
+        return holoOffsets;
+    }
+
+    @Override
+    public void setHoloOffsets(Vector offsets) {
+        this.holoOffsets = offsets;
+    }
+
+    @Override
+    public String getChestFacing() {
+        return chestFacing;
+    }
+
+    @Override
+    public void setChestFacing(String facing) {
+        this.chestFacing = facing;
     }
 
     @Override
@@ -2434,5 +2489,40 @@ public class CAirDrop implements AirDrop, StateSerializable {
         }
         return false;
     }
+
+    private void applyBlockFacing(Block block) {
+        if (chestFacing.equals("NONE")) return;
+        if (!(block.getBlockData() instanceof Directional directional)) return;
+        try {
+            BlockFace face = BlockFace.valueOf(chestFacing);
+            directional.setFacing(face);
+            block.setBlockData(directional);
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
+
+    @Override
+    public org.by1337.bairdrop.bossbar.AirDropBossBar getAirDropBossBar() {
+        return airDropBossBar;
+    }
+
+    public boolean isItemRevealEnabled() { return itemRevealEnabled; }
+    public void setItemRevealEnabled(boolean enabled) { this.itemRevealEnabled = enabled; }
+    public int getItemRevealMinPerStep() { return itemRevealMinPerStep; }
+    public int getItemRevealMaxPerStep() { return itemRevealMaxPerStep; }
+    public void setItemRevealItemsPerStep(int min, int max) { this.itemRevealMinPerStep = min; this.itemRevealMaxPerStep = max; }
+    public double getItemRevealInterval() { return itemRevealInterval; }
+    public void setItemRevealInterval(double interval) { this.itemRevealInterval = interval; }
+    public boolean isItemRevealStepSoundEnabled() { return itemRevealStepSoundEnabled; }
+    public void setItemRevealStepSoundEnabled(boolean enabled) { this.itemRevealStepSoundEnabled = enabled; }
+    public String getItemRevealStepSound() { return itemRevealStepSound; }
+    public void setItemRevealStepSound(String sound) { this.itemRevealStepSound = sound; }
+    public float getItemRevealSoundVolume() { return itemRevealSoundVolume; }
+    public void setItemRevealSoundVolume(float volume) { this.itemRevealSoundVolume = volume; }
+    public float getItemRevealSoundPitchMin() { return itemRevealSoundPitchMin; }
+    public float getItemRevealSoundPitchMax() { return itemRevealSoundPitchMax; }
+    public void setItemRevealSoundPitch(float min, float max) { this.itemRevealSoundPitchMin = min; this.itemRevealSoundPitchMax = max; }
+    public int getItemRevealSoundRadius() { return itemRevealSoundRadius; }
+    public void setItemRevealSoundRadius(int radius) { this.itemRevealSoundRadius = radius; }
 
 }

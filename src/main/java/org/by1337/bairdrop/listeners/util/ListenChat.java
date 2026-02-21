@@ -59,7 +59,17 @@ public class ListenChat implements Listener {
                 }
                 airDrop.setDisplayName(e.getMessage());
                 airDrop.save();
-                Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("named-changed"), e.getMessage()));
+                Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("airname-changed"), e.getMessage()));
+            }
+            if (changeNameString.equalsIgnoreCase("eventlistname")) {
+                if (airDrop.isAirDropStarted()){
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("stop-event-for-edit"));
+                    e.setCancelled(true);
+                    return;
+                }
+                airDrop.setEventListName(e.getMessage());
+                airDrop.save();
+                Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("event-list-name-changed"), e.getMessage()));
             }
             try {
                 if (changeNameString.equalsIgnoreCase("spawnmin")) {
@@ -186,6 +196,114 @@ public class ListenChat implements Listener {
                     airDrop.setMinPlayersToStart(x);
                     airDrop.save();
                     Message.sendMsg(pl, String.format(BAirDrop.getConfigMessage().getMessage("min-online-players-changed"), e.getMessage()));
+                }
+                if (changeNameString.equalsIgnoreCase("bossbar_radius")) {
+                    int x = Integer.parseInt(e.getMessage());
+                    if (x < 1) {
+                        Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("bossbar-invalid-value"));
+                        e.setCancelled(true);
+                        return;
+                    }
+                    airDrop.getAirDropBossBar().setRadius(x);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(x)));
+                }
+                if (changeNameString.equalsIgnoreCase("holo_offset_y")) {
+                    double y = Double.parseDouble(e.getMessage());
+                    org.bukkit.util.Vector offsets = airDrop.getHoloOffsets();
+                    offsets.setY(y);
+                    airDrop.setHoloOffsets(offsets);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(y)));
+                }
+                if (changeNameString.equalsIgnoreCase("holo_text_opacity")) {
+                    int val = Integer.parseInt(e.getMessage());
+                    airDrop.getHologramSettings().setTextOpacity((byte) (val * 255 / 100));
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
+                }
+                if (changeNameString.equalsIgnoreCase("holo_bg_color")) {
+                    String hex = e.getMessage().replace("#", "");
+                    int rgb = Integer.parseInt(hex, 16);
+                    org.bukkit.Color color = org.bukkit.Color.fromRGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+                    airDrop.getHologramSettings().setBackgroundColor(color);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", e.getMessage()));
+                }
+                if (changeNameString.equalsIgnoreCase("holo_bg_opacity")) {
+                    int val = Integer.parseInt(e.getMessage());
+                    airDrop.getHologramSettings().setBackgroundOpacity(val);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
+                }
+                if (changeNameString.equalsIgnoreCase("holo_view_range")) {
+                    float val = Float.parseFloat(e.getMessage());
+                    airDrop.getHologramSettings().setViewRange(val);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
+                }
+                if (changeNameString.equalsIgnoreCase("holo_brightness")) {
+                    int val = Integer.parseInt(e.getMessage());
+                    airDrop.getHologramSettings().setBrightness(val);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
+                }
+                if (changeNameString.equalsIgnoreCase("holo_scale")) {
+                    float val = Float.parseFloat(e.getMessage());
+                    airDrop.getHologramSettings().setScale(val);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
+                }
+                if (changeNameString.equalsIgnoreCase("holo_yaw")) {
+                    float val = Float.parseFloat(e.getMessage());
+                    airDrop.getHologramSettings().setYaw(val);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
+                }
+                if (changeNameString.equalsIgnoreCase("holo_pitch")) {
+                    float val = Float.parseFloat(e.getMessage());
+                    airDrop.getHologramSettings().setPitch(val);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
+                }
+                if (changeNameString.equalsIgnoreCase("item_reveal_items_per_step") && airDrop instanceof org.by1337.bairdrop.CAirDrop cAirDrop) {
+                    String[] parts = e.getMessage().split("-");
+                    int min = Integer.parseInt(parts[0].trim());
+                    int max = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : min;
+                    cAirDrop.setItemRevealItemsPerStep(min, max);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", e.getMessage()));
+                }
+                if (changeNameString.equalsIgnoreCase("item_reveal_interval") && airDrop instanceof org.by1337.bairdrop.CAirDrop cAirDrop) {
+                    double val = Double.parseDouble(e.getMessage());
+                    cAirDrop.setItemRevealInterval(val);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
+                }
+                if (changeNameString.equalsIgnoreCase("item_reveal_sound") && airDrop instanceof org.by1337.bairdrop.CAirDrop cAirDrop) {
+                    cAirDrop.setItemRevealStepSound(e.getMessage());
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", e.getMessage()));
+                }
+                if (changeNameString.equalsIgnoreCase("item_reveal_volume") && airDrop instanceof org.by1337.bairdrop.CAirDrop cAirDrop) {
+                    float val = Float.parseFloat(e.getMessage());
+                    cAirDrop.setItemRevealSoundVolume(val);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
+                }
+                if (changeNameString.equalsIgnoreCase("item_reveal_pitch") && airDrop instanceof org.by1337.bairdrop.CAirDrop cAirDrop) {
+                    String[] parts = e.getMessage().split("-");
+                    float min = Float.parseFloat(parts[0].trim());
+                    float max = parts.length > 1 ? Float.parseFloat(parts[1].trim()) : min;
+                    cAirDrop.setItemRevealSoundPitch(min, max);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", e.getMessage()));
+                }
+                if (changeNameString.equalsIgnoreCase("item_reveal_radius") && airDrop instanceof org.by1337.bairdrop.CAirDrop cAirDrop) {
+                    int val = Integer.parseInt(e.getMessage());
+                    cAirDrop.setItemRevealSoundRadius(val);
+                    airDrop.save();
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("setting-set").replace("{value}", String.valueOf(val)));
                 }
             } catch (NumberFormatException var3) {
                 Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("isn-t-number"));

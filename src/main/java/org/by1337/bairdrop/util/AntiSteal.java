@@ -6,7 +6,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -58,67 +61,110 @@ public class AntiSteal implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getInventory().equals(airDrop.getInventory())) {
-            Player player = (Player) event.getWhoClicked();
-            
-            if (event.getClickedInventory() != null && event.getClickedInventory().equals(player.getInventory()) && event.isShiftClick()) {
+        if (!event.getInventory().equals(airDrop.getInventory())) return;
+        
+        Player player = (Player) event.getWhoClicked();
+        ClickType click = event.getClick();
+        InventoryAction action = event.getAction();
+        
+        if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) {
+            event.setCancelled(true);
+            return;
+        }
+        
+        if (event.getClickedInventory() != null && event.getClickedInventory().equals(player.getInventory())) {
+            if (event.isShiftClick()) {
                 event.setCancelled(true);
                 return;
             }
-            if (event.getClickedInventory() != null && event.getClickedInventory().equals(airDrop.getInventory()) && event.getCursor() != null && !event.getCursor().getType().isAir()) {
+            if (action == InventoryAction.COLLECT_TO_CURSOR) {
                 event.setCancelled(true);
                 return;
             }
-            if (event.getClickedInventory() != null && event.getClickedInventory().equals(airDrop.getInventory()) && event.getHotbarButton() != -1) {
+            return;
+        }
+        
+        if (event.getClickedInventory() != null && event.getClickedInventory().equals(airDrop.getInventory())) {
+            if (click == ClickType.RIGHT || click == ClickType.SHIFT_RIGHT) {
                 event.setCancelled(true);
                 return;
             }
-            
-            if (event.getCurrentItem() == null) return;
-            
-            if (!BAirDrop.getInstance().getConfig().getBoolean("anti-steal.enable", false)) return;
-            
-            ChestStealData chestStealData = chestStealDataMap.getOrDefault(player.getUniqueId(), new ChestStealData());
-            long currentTime = System.currentTimeMillis();
-            int cooldownMs = BAirDrop.getInstance().getConfig().getInt("anti-steal.cooldown");
-            int cooldownTicks = Math.abs(cooldownMs / 50);
+            if (event.getCursor() != null && !event.getCursor().getType().isAir()) {
+                event.setCancelled(true);
+                return;
+            }
+            if (event.getHotbarButton() != -1) {
+                event.setCancelled(true);
+                return;
+            }
+            if (action == InventoryAction.SWAP_WITH_CURSOR || action == InventoryAction.PLACE_ALL || 
+                action == InventoryAction.PLACE_ONE || action == InventoryAction.PLACE_SOME) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+        
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType().isAir()) return;
+        
+        if (!BAirDrop.getInstance().getConfig().getBoolean("anti-steal.enable", false)) {
+            if (event.getClickedInventory() != null && event.getClickedInventory().equals(airDrop.getInventory())) {
+                trackLoot(player, event.getCurrentItem().getAmount());
+            }
+            return;
+        }
+        
+        ChestStealData chestStealData = chestStealDataMap.getOrDefault(player.getUniqueId(), new ChestStealData());
+        long currentTime = System.currentTimeMillis();
+        int cooldownMs = BAirDrop.getInstance().getConfig().getInt("anti-steal.cooldown");
+        int cooldownTicks = Math.abs(cooldownMs / 50);
 
-            if (chestStealData.getLastSteal() != -1 && currentTime - chestStealData.getLastSteal() <= cooldownMs) {
+        if (chestStealData.getLastSteal() != -1 && currentTime - chestStealData.getLastSteal() <= cooldownMs) {
+            event.setCancelled(true);
+            if (BAirDrop.getInstance().getConfig().getBoolean("anti-steal.show-message", true)) {
+                Message.sendMsg(player, BAirDrop.getConfigMessage().getMessage("anti-steal-limit-speed"));
+            }
+            chestStealDataMap.put(player.getUniqueId(), chestStealData);
+            return;
+        }
+
+        if (chestStealData.getLastTime() != 0) {
+            long lastActionTime = chestStealData.getLastTime();
+            long interval = currentTime - lastActionTime;
+            if (interval != 0) {
+                chestStealData.addTime(interval);
+            }
+            if (chestStealData.getWarnings() >= BAirDrop.getInstance().getConfig().getInt("anti-steal.max-warnings")) {
+                airDrop.notifyObservers(CustomEvent.PLAYER_STEAL, player);
+                chestStealData.reset();
                 event.setCancelled(true);
-                if (BAirDrop.getInstance().getConfig().getBoolean("anti-steal.show-message", true)) {
-                    Message.sendMsg(player, BAirDrop.getConfigMessage().getMessage("anti-steal-limit-speed"));
-                }
                 chestStealDataMap.put(player.getUniqueId(), chestStealData);
                 return;
             }
+        }
 
-            if (chestStealData.getLastTime() != 0) {
-                long lastActionTime = chestStealData.getLastTime();
-                long interval = currentTime - lastActionTime;
-                if (interval != 0) {
-                    chestStealData.addTime(interval);
-                }
-                if (chestStealData.getWarnings() >= BAirDrop.getInstance().getConfig().getInt("anti-steal.max-warnings")) {
-                    airDrop.notifyObservers(CustomEvent.PLAYER_STEAL, player);
-                    chestStealData.reset();
-                    event.setCancelled(true);
-                    chestStealDataMap.put(player.getUniqueId(), chestStealData);
-                    return;
-                }
-            }
+        chestStealData.setLastTime(currentTime);
+        chestStealData.setLastSteal(currentTime);
+        if (BAirDrop.getInstance().getConfig().getBoolean("anti-steal.show-cooldown-on-click", true)) {
+            applyCooldownToAllItems(player, event.getInventory(), cooldownTicks);
+        }
+        chestStealDataMap.put(player.getUniqueId(), chestStealData);
+        
+        if (event.getClickedInventory() != null && event.getClickedInventory().equals(airDrop.getInventory())) {
+            trackLoot(player, event.getCurrentItem().getAmount());
+        }
+    }
 
-            chestStealData.setLastTime(currentTime);
-            chestStealData.setLastSteal(currentTime);
-            if (BAirDrop.getInstance().getConfig().getBoolean("anti-steal.show-cooldown-on-click", true)) {
-                applyCooldownToAllItems(player, event.getInventory(), cooldownTicks);
-            }
-            chestStealDataMap.put(player.getUniqueId(), chestStealData);
-            
-            if (event.getCurrentItem() != null && !event.getCurrentItem().getType().isAir()) {
-                trackLoot(player, event.getCurrentItem().getAmount());
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (!event.getInventory().equals(airDrop.getInventory())) return;
+        for (int slot : event.getRawSlots()) {
+            if (slot < airDrop.getInventory().getSize()) {
+                event.setCancelled(true);
+                return;
             }
         }
     }
+
     public void unregister(){
         HandlerList.unregisterAll(this);
     }

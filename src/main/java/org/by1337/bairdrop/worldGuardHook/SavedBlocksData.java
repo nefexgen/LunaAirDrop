@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,17 +33,13 @@ public class SavedBlocksData {
             Location loc = entry.getKey();
             BlockData data = entry.getValue();
             Block block = loc.getBlock();
-            block.setBlockData(data, true);
+            block.setBlockData(data, false);
             affectedChunks.add(block.getChunk());
         }
         
         for (Chunk chunk : affectedChunks) {
             if (chunk.isLoaded()) {
-                for (Player player : world.getPlayers()) {
-                    if (player.getLocation().distanceSquared(chunk.getBlock(8, 64, 8).getLocation()) < 256 * 256) {
-                        player.getWorld().refreshChunk(chunk.getX(), chunk.getZ());
-                    }
-                }
+                world.refreshChunk(chunk.getX(), chunk.getZ());
             }
         }
         

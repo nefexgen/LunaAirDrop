@@ -3,7 +3,6 @@ package org.by1337.bairdrop.ItemUtil;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.by1337.bairdrop.ItemUtil.SkullUtils;
 import org.by1337.bairdrop.util.Message;
 
 public class BaseHeadHook {

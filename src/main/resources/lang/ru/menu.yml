@@ -441,12 +441,6 @@ main:
     material: BLACK_STAINED_GLASS_PANE
     lore:
       - ''
-  glasspane37:
-    slot: 37
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
-    lore:
-      - ''
   glasspane43:
     slot: 43
     name: ' '
@@ -459,27 +453,26 @@ main:
     material: BLACK_STAINED_GLASS_PANE
     lore:
       - ''
-  glasspane45:
-    slot: 45
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
-    lore:
-      - ''
-  glasspane46:
+  editEventListName:
     slot: 46
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
+    name: '&eИмя в списке ивентов'
+    material: NAME_TAG
     lore:
       - ''
-  glasspane52:
+      - '&8▸ &7Сейчас: &f{event-list-name}'
+      - ''
+      - '&a▶ ЛКМ &8- &7Изменить'
+    commands:
+      LEFT-CLICK:
+        - '[change-EventListName]'
+  spreadingItems:
     slot: 52
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
+    name: '&#FF5555Р&#FF6A40а&#FF802Bз&#FF9515б&#FFAA00р&#FFC61Cа&#FFE339с&#FFFF55ы&#D5FF55в&#AAFF55а&#80FF55н&#55FF55и&#55FF80е &#55FFD5п&#55FFFFр&#71AAE3е&#8E55C6д&#AA00AAм&#BF15BFе&#D52BD5т&#EA40EAо&#FF55FFв'
+    material: WIND_CHARGE
     lore:
       - ''
-  glasspane53:
-    slot: 53
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
-    lore:
+      - ' &8□ xxxxxxxxx: xxxx'
+      - ' &8□ xxxxxxx: xx'
+      - ' &8□ xxxxx: xx'
       - ''
+      - '&8(Доступно только в LunaAirDropX)'

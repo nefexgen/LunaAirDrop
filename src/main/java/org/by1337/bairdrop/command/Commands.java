@@ -461,6 +461,19 @@ public class Commands implements CommandExecutor {
                 }
                 return true;
             }
+            if (args[0].equals("gps")) {
+                if (!pl.hasPermission("bair.gps")) {
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("no-prem"));
+                    return true;
+                }
+                GpsCommand gpsCommand = new GpsCommand();
+                if (args.length > 1) {
+                    gpsCommand.onCommand(sender, command, label, new String[]{args[1]});
+                } else {
+                    gpsCommand.onCommand(sender, command, label, new String[]{});
+                }
+                return true;
+            }
         } else {
             if (args.length == 0) {
                 Message.logger(BAirDrop.getConfigMessage().getMessage("few-arguments"));
