@@ -441,12 +441,6 @@ main:
     material: BLACK_STAINED_GLASS_PANE
     lore:
       - ''
-  glasspane37:
-    slot: 37
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
-    lore:
-      - ''
   glasspane43:
     slot: 43
     name: ' '
@@ -459,26 +453,20 @@ main:
     material: BLACK_STAINED_GLASS_PANE
     lore:
       - ''
-  glasspane45:
-    slot: 45
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
-    lore:
-      - ''
-  glasspane46:
+  editEventListName:
     slot: 46
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
+    name: '&eEvent List Name'
+    material: NAME_TAG
     lore:
       - ''
+      - '&8▸ &7Current: &f{event-list-name}'
+      - ''
+      - '&a▶ LMB &8- &7Change'
+    commands:
+      LEFT-CLICK:
+        - '[change-EventListName]'
   glasspane52:
     slot: 52
-    name: ' '
-    material: BLACK_STAINED_GLASS_PANE
-    lore:
-      - ''
-  glasspane53:
-    slot: 53
     name: ' '
     material: BLACK_STAINED_GLASS_PANE
     lore:

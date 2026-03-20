@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class Message {
     private static final ConsoleCommandSender SENDER = Bukkit.getConsoleSender();
     private static final String AUTHOR = "&#a612cb&lB&#9a17d2&ly&#8d1bd9&l1&#8120e1&l3&#7424e8&l3&#6829ef&l7";
-    private static final String prefixPlugin = "&#a600f4[&#a70bf5B&#a815f6A&#a920f7i&#aa2bf8r&#aa35f8d&#ab40f9r&#ac4bfao&#ad55fbp&#ae60fcS&#b070fd]";
+    private static final String prefixPlugin = "&#8B3DE7[&#9145E9L&#974CEBu&#9D54EDn&#A35CEFa&#A963F1A&#B06BF3i&#B673F5r&#BC7AF7D&#C282F9r&#C88AFBo&#CE91FDp&#D499FF]";
     private static final Pattern RAW_HEX_REGEX = Pattern.compile("&(#[a-f0-9]{6})", Pattern.CASE_INSENSITIVE);
 
     /**

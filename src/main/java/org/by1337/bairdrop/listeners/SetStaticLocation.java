@@ -29,11 +29,12 @@ public class SetStaticLocation implements Listener {
 
     @EventHandler
     public void onClick(BlockBreakEvent e) {
-        if (e.getPlayer().getInventory().contains(item)) {
+        ItemStack handItem = e.getPlayer().getInventory().getItemInMainHand();
+        if (handItem != null && handItem.isSimilar(item)) {
             airDrop.setStaticLocation(e.getBlock().getLocation());
             airDrop.save();
             Message.sendMsg(e.getPlayer(), BAirDrop.getConfigMessage().getMessage("set-static-loc"));
-            e.getPlayer().getInventory().remove(item);
+            e.getPlayer().getInventory().setItemInMainHand(null);
             e.setCancelled(true);
             HandlerList.unregisterAll(this);
         }

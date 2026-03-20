@@ -1,5 +1,6 @@
 package org.by1337.bairdrop.hologram;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -110,7 +111,7 @@ public class HologramManager {
         if (data.entities.isEmpty() || !(data.entities.get(0) instanceof TextDisplay)) {
             removeEntities(data);
             data.entities.clear();
-            createTextDisplay(data, lines, location, settings);
+            createTextDisplay(data, lines, location, settings); // ajkshdjsa
             return;
         }
 
@@ -192,6 +193,145 @@ public class HologramManager {
         }
     }
 
+    public static void createOrUpdateHologramComponent(Component component, Location location, String id, HologramType type, HologramSettings settings) {
+        if (location == null || location.getWorld() == null || type == null || component == null) {
+            return;
+        }
+
+        HologramData data = holograms.get(id);
+        boolean chunkLoaded = location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+
+        if (data != null) {
+            if (data.type != type) {
+                removeEntities(data);
+                data.entities.clear();
+                data.type = type;
+            }
+
+            data.location = location.clone();
+            data.settings = settings;
+            data.component = component;
+
+            if (!chunkLoaded) {
+                return;
+            }
+
+            if (type == HologramType.TEXTDISPLAY) {
+                updateTextDisplayComponent(data, component, location, settings);
+            } else {
+                updateArmorStandComponent(data, component, location);
+            }
+        } else {
+            data = new HologramData(id, type, location.clone(), settings, component);
+            holograms.put(id, data);
+
+            if (!chunkLoaded) {
+                return;
+            }
+
+            if (type == HologramType.TEXTDISPLAY) {
+                createTextDisplayComponent(data, component, location, settings);
+            } else {
+                createArmorStandComponent(data, component, location);
+            }
+        }
+    }
+
+    private static void createTextDisplayComponent(HologramData data, Component component, Location location, HologramSettings settings) {
+        Location spawnLoc = location.clone();
+        if (settings != null && settings.getBillboard() == Display.Billboard.FIXED) {
+            spawnLoc.setYaw(settings.getYaw());
+            spawnLoc.setPitch(settings.getPitch());
+        }
+        
+        TextDisplay display = spawnLoc.getWorld().spawn(spawnLoc, TextDisplay.class, entity -> {
+            entity.text(component);
+            entity.setPersistent(false);
+
+            if (settings != null) {
+                entity.setBillboard(settings.getBillboard());
+                entity.setAlignment(settings.getTextAlignment());
+                entity.setSeeThrough(settings.isSeeThrough());
+                entity.setShadowed(settings.isTextShadow());
+                entity.setTextOpacity(settings.getTextOpacity());
+                entity.setDefaultBackground(false);
+                entity.setBackgroundColor(settings.getBackgroundColor());
+                entity.setLineWidth(Integer.MAX_VALUE);
+                entity.setViewRange(settings.getViewRange() / 64.0f);
+
+                float s = settings.getScale();
+                entity.setTransformation(new Transformation(
+                    new Vector3f(0, 0, 0),
+                    new AxisAngle4f(0, 0, 0, 1),
+                    new Vector3f(s, s, s),
+                    new AxisAngle4f(0, 0, 0, 1)
+                ));
+
+                int brightness = settings.getBrightness();
+                if (brightness >= 0 && brightness <= 15) {
+                    entity.setBrightness(new Display.Brightness(brightness, brightness));
+                }
+            } else {
+                entity.setBillboard(Display.Billboard.CENTER);
+                entity.setAlignment(TextDisplay.TextAlignment.CENTER);
+            }
+        });
+        data.entities.add(display);
+    }
+
+    private static void updateTextDisplayComponent(HologramData data, Component component, Location location, HologramSettings settings) {
+        if (data.entities.isEmpty() || !(data.entities.get(0) instanceof TextDisplay)) {
+            removeEntities(data);
+            data.entities.clear();
+            createTextDisplayComponent(data, component, location, settings);
+            return;
+        }
+
+        TextDisplay display = (TextDisplay) data.entities.get(0);
+        if (!display.isValid()) {
+            data.entities.clear();
+            createTextDisplayComponent(data, component, location, settings);
+            return;
+        }
+
+        display.text(component);
+        
+        Location teleportLoc = location.clone();
+        if (settings != null && settings.getBillboard() == Display.Billboard.FIXED) {
+            teleportLoc.setYaw(settings.getYaw());
+            teleportLoc.setPitch(settings.getPitch());
+        }
+        display.teleport(teleportLoc);
+    }
+
+    private static void createArmorStandComponent(HologramData data, Component component, Location location) {
+        ArmorStand stand = location.getWorld().spawn(location, ArmorStand.class, entity -> {
+            entity.setVisible(false);
+            entity.setGravity(false);
+            entity.setMarker(true);
+            entity.setSmall(true);
+            entity.setCustomNameVisible(true);
+            entity.setPersistent(false);
+            entity.setInvulnerable(true);
+            entity.setCollidable(false);
+        });
+        stand.customName(component);
+        data.entities.add(stand);
+    }
+
+    private static void updateArmorStandComponent(HologramData data, Component component, Location location) {
+        if (data.entities.isEmpty() || !(data.entities.get(0) instanceof ArmorStand) || !data.entities.get(0).isValid()) {
+            removeEntities(data);
+            data.entities.clear();
+            createArmorStandComponent(data, component, location);
+            return;
+        }
+
+        ArmorStand stand = (ArmorStand) data.entities.get(0);
+        stand.teleport(location);
+        stand.customName(component);
+    }
+
     public static void remove(String id) {
         HologramData data = holograms.remove(id);
         if (data != null) {
@@ -215,10 +355,18 @@ public class HologramManager {
             if (chunkX == chunk.getX() && chunkZ == chunk.getZ()) {
                 if (data.entities.isEmpty() || data.entities.stream().noneMatch(Entity::isValid)) {
                     data.entities.clear();
-                    if (data.type == HologramType.TEXTDISPLAY) {
-                        createTextDisplay(data, data.lines, data.location, data.settings);
+                    if (data.component != null) {
+                        if (data.type == HologramType.TEXTDISPLAY) {
+                            createTextDisplayComponent(data, data.component, data.location, data.settings);
+                        } else {
+                            createArmorStandComponent(data, data.component, data.location);
+                        }
                     } else {
-                        createArmorStands(data, data.lines, data.location);
+                        if (data.type == HologramType.TEXTDISPLAY) {
+                            createTextDisplay(data, data.lines, data.location, data.settings);
+                        } else {
+                            createArmorStands(data, data.lines, data.location);
+                        }
                     }
                 }
             }
@@ -231,6 +379,7 @@ public class HologramManager {
         Location location;
         HologramSettings settings;
         List<String> lines = new ArrayList<>();
+        Component component;
         List<Entity> entities = new ArrayList<>();
 
         HologramData(String id, HologramType type, Location location, HologramSettings settings, List<String> lines) {
@@ -239,6 +388,14 @@ public class HologramManager {
             this.location = location;
             this.settings = settings;
             this.lines = new ArrayList<>(lines);
+        }
+
+        HologramData(String id, HologramType type, Location location, HologramSettings settings, Component component) {
+            this.id = id;
+            this.type = type;
+            this.location = location;
+            this.settings = settings;
+            this.component = component;
         }
     }
 }

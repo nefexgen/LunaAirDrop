@@ -47,7 +47,7 @@ public class CSchematicsManager implements SchematicsManager{
                     BAirDrop.getiConfig().getSchemConf().getInt(String.format("schematics.%s.offsets-y", name)),
                     BAirDrop.getiConfig().getSchemConf().getInt(String.format("schematics.%s.offsets-z", name))
             );
-            boolean ignoreAirBlocks = BAirDrop.getiConfig().getSchemConf().getBoolean(String.format("schematics.%s.ignore-air-blocks", name));
+            boolean ignoreAirBlocks = BAirDrop.getiConfig().getSchemConf().getBoolean(String.format("schematics.%s.ignore-air-blocks", name), true);
             String file = BAirDrop.getiConfig().getSchemConf().getString(String.format("schematics.%s.file", name));
 
             Map<BlockState, BlockState> replaceBlocks = new HashMap<>();

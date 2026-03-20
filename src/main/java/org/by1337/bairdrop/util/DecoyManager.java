@@ -1,6 +1,7 @@
 package org.by1337.bairdrop.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -8,12 +9,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.by1337.bairdrop.AirDrop;
 import org.by1337.bairdrop.BAirDrop;
 
@@ -93,8 +97,38 @@ public class DecoyManager implements Listener {
 
         playerDecoyInventories.put(player.getUniqueId(), decoyInventory);
         playerRealItems.put(player.getUniqueId(), realItemsMap);
+        
+        startDistanceCheck(player);
 
         return decoyInventory;
+    }
+    
+    private void startDistanceCheck(Player player) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!player.isOnline()) {
+                    cancel();
+                    return;
+                }
+                Inventory decoyInv = playerDecoyInventories.get(player.getUniqueId());
+                if (decoyInv == null) {
+                    cancel();
+                    return;
+                }
+                Location airDropLoc = airDrop.getAirDropLocation();
+                if (airDropLoc == null || !airDropLoc.getWorld().equals(player.getWorld())) {
+                    player.closeInventory();
+                    cancel();
+                    return;
+                }
+                double distance = player.getLocation().distance(airDropLoc);
+                if (distance > 10.0) {
+                    player.closeInventory();
+                    cancel();
+                }
+            }
+        }.runTaskTimer(BAirDrop.getInstance(), 20L, 20L);
     }
 
     private ItemStack createDecoyItem(int slot) {
@@ -106,6 +140,9 @@ public class DecoyManager implements Listener {
         if (meta != null) {
             meta.setDisplayName(Message.messageBuilder(fakeName));
             meta.getPersistentDataContainer().set(DECOY_KEY, PersistentDataType.INTEGER, slot);
+            if (airDrop.isDecoyHideTooltip()) {
+                meta.setHideTooltip(true);
+            }
             decoyItem.setItemMeta(meta);
         }
         return decoyItem;
@@ -118,10 +155,21 @@ public class DecoyManager implements Listener {
         Inventory decoyInventory = playerDecoyInventories.get(player.getUniqueId());
         if (decoyInventory == null || !event.getInventory().equals(decoyInventory)) return;
 
+        if (event.getClickedInventory() == null) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (!event.getClickedInventory().equals(decoyInventory)) {
+            if (event.isShiftClick()) {
+                event.setCancelled(true);
+            }
+            return;
+        }
+
         event.setCancelled(true);
 
         if (event.getCurrentItem() == null || event.getCurrentItem().getType().isAir()) return;
-        if (event.getClickedInventory() == null || !event.getClickedInventory().equals(decoyInventory)) return;
 
         if (antiStealEnabled) {
             ChestStealData chestStealData = getChestStealDataMap().getOrDefault(player.getUniqueId(), new ChestStealData());
@@ -160,7 +208,7 @@ public class DecoyManager implements Listener {
         }
 
         int slot = event.getSlot();
-        Map<Integer, ItemStack> realItems = playerRealItems.get(player.getUniqueId());
+        Map<Integer, ItemStack> realItems = playerRealItems.get(player.getUniqueId()); // asdasd
         if (realItems == null) return;
 
         ItemStack realItem = realItems.get(slot);
@@ -174,17 +222,47 @@ public class DecoyManager implements Listener {
             return;
         }
 
-        HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(realItem.clone());
-        if (leftover.isEmpty()) {
-            realInventory.setItem(slot, null);
-            decoyInventory.setItem(slot, null);
-            realItems.remove(slot);
-            AntiSteal antiSteal = airDrop.getAntiSteal();
-            if (antiSteal != null) {
-                antiSteal.trackLoot(player, realItem.getAmount());
+        ClickType clickType = event.getClick();
+        
+        if (clickType.isShiftClick()) {
+            HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(realItem.clone());
+            if (leftover.isEmpty()) {
+                realInventory.setItem(slot, null);
+                decoyInventory.setItem(slot, null);
+                realItems.remove(slot);
+                AntiSteal antiSteal = airDrop.getAntiSteal();
+                if (antiSteal != null) {
+                    antiSteal.trackLoot(player, realItem.getAmount());
+                }
+                syncAllDecoyInventories(slot);
+            } else {
+                Message.sendMsg(player, BAirDrop.getConfigMessage().getMessage("inventory-full"));
             }
-        } else {
-            Message.sendMsg(player, BAirDrop.getConfigMessage().getMessage("inventory-full"));
+        } else if (clickType == ClickType.LEFT || clickType == ClickType.RIGHT) {
+            ItemStack cursor = event.getCursor();
+            if (cursor == null || cursor.getType().isAir()) {
+                player.setItemOnCursor(realItem.clone());
+                realInventory.setItem(slot, null);
+                decoyInventory.setItem(slot, null);
+                realItems.remove(slot);
+                AntiSteal antiSteal = airDrop.getAntiSteal();
+                if (antiSteal != null) {
+                    antiSteal.trackLoot(player, realItem.getAmount());
+                }
+                syncAllDecoyInventories(slot);
+            }
+        }
+    }
+
+    private void syncAllDecoyInventories(int slot) {
+        for (Map.Entry<UUID, Inventory> entry : playerDecoyInventories.entrySet()) {
+            UUID uuid = entry.getKey();
+            Inventory decoyInventory = entry.getValue();
+            Map<Integer, ItemStack> realItemsMap = playerRealItems.get(uuid);
+            decoyInventory.setItem(slot, null);
+            if (realItemsMap != null) {
+                realItemsMap.remove(slot);
+            }
         }
     }
 
@@ -223,7 +301,7 @@ public class DecoyManager implements Listener {
                     decoyInventory.setItem(slot, createDecoyItem(slot));
                 } else if (!hasReal && hasDecoy) {
                     realItemsMap.remove(slot);
-                    decoyInventory.setItem(slot, null);
+                    decoyInventory.setItem(slot, null); // qweqwe
                 }
             }
         }
@@ -256,6 +334,14 @@ public class DecoyManager implements Listener {
         closeAllInventories();
     }
 
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+        Inventory decoyInventory = playerDecoyInventories.get(player.getUniqueId());
+        if (decoyInventory == null || !event.getInventory().equals(decoyInventory)) return;
+        event.setCancelled(true);
+    }
+
     public static boolean isEnabled(AirDrop airDrop) {
         return airDrop.isDecoyProtectionEnabled();
     }
@@ -276,4 +362,5 @@ public class DecoyManager implements Listener {
             player.setCooldown(mat, ticks);
         }
     }
+
 }

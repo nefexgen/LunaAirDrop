@@ -17,6 +17,7 @@ import org.by1337.bairdrop.worldGuardHook.RegionManager;
 import org.by1337.bairdrop.command.Commands;
 import org.by1337.bairdrop.command.Completer;
 import org.by1337.bairdrop.command.DelayCommand;
+import org.by1337.bairdrop.command.GpsCommand;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
@@ -89,6 +90,7 @@ public final class BAirDrop extends JavaPlugin {
         Objects.requireNonNull(getInstance().getCommand("bairdrop")).setExecutor(new Commands());
         Objects.requireNonNull(getInstance().getCommand("bairdrop")).setTabCompleter(new Completer());
         registerDelayAliases();
+        registerGpsAliases();
         Bukkit.getServer().getPluginManager().registerEvents(new InteractListener(), getInstance());
         getServer().getPluginManager().registerEvents(summoner, getInstance());
         getServer().getPluginManager().registerEvents(new CraftItem(), BAirDrop.getInstance());
@@ -116,11 +118,13 @@ public final class BAirDrop extends JavaPlugin {
         if (BAirDrop.getInstance().getConfig().getBoolean("global-time.enable")) {
             globalTimer = new GlobalTimer((BAirDrop.getInstance().getConfig().getInt("global-time.time") * 60));
         }
+        
+        
         if (logLevel == LogLevel.HARD) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    Message.debug(String.format(getConfigMessage().getMessage("thread-count"), getInstance().getServer().getScheduler().getPendingTasks().stream().filter(t -> t.getOwner().getName().equalsIgnoreCase("BairDropS"))
+                    Message.debug(String.format(getConfigMessage().getMessage("thread-count"), getInstance().getServer().getScheduler().getPendingTasks().stream().filter(t -> t.getOwner().getName().equalsIgnoreCase("LunaAirDrop"))
                             .count()), LogLevel.HARD);
                 }
             }.runTaskTimerAsynchronously(getInstance(), 10, 10);
@@ -152,6 +156,12 @@ public final class BAirDrop extends JavaPlugin {
         if (!getiConfig().isLoaded())
             return;
         long x = System.currentTimeMillis();
+        
+        if (globalTimer != null) {
+            globalTimer.shutdown();
+            globalTimer = null;
+        }
+        
         for (AirDrop airDrop : airDrops.values()) {
             if (instance.getConfig().getBoolean("state-serializable") && airDrop instanceof StateSerializable stateSerializable) stateSerializable.stateSerialize();
 
@@ -166,6 +176,9 @@ public final class BAirDrop extends JavaPlugin {
             RegionManager.RemoveRegion(airDrop);
         }
         CustomCraft.unloadCrafts();
+        
+
+        Bukkit.getScheduler().cancelTasks(this);
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
             new PlaceholderHook().unregister();
@@ -242,6 +255,30 @@ public final class BAirDrop extends JavaPlugin {
             }
         } catch (Exception e) {
             Message.error("Failed to register delay command aliases: " + e.getMessage());
+        }
+    }
+
+    private void registerGpsAliases() {
+        List<String> aliases = getConfig().getStringList("gps-command.aliases");
+        if (aliases.isEmpty()) return;
+        
+        try {
+            Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            commandMapField.setAccessible(true);
+            CommandMap commandMap = (CommandMap) commandMapField.get(Bukkit.getServer());
+            
+            GpsCommand gpsCommand = new GpsCommand();
+            for (String alias : aliases) {
+                Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
+                constructor.setAccessible(true);
+                PluginCommand cmd = constructor.newInstance(alias, this);
+                cmd.setExecutor(gpsCommand);
+                cmd.setTabCompleter(gpsCommand);
+                cmd.setPermission("bair.gps");
+                commandMap.register(getName(), cmd);
+            }
+        } catch (Exception e) {
+            Message.error("Failed to register gps command aliases: " + e.getMessage());
         }
     }
 

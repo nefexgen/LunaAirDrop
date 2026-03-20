@@ -53,16 +53,18 @@ public class Commands implements CommandExecutor {
                 }
                 Player player = pl;
                 int amount = 1;
-                if (args.length > 1)
-                    player = Bukkit.getPlayer(args[1]);
-                try {
-                    if (args.length > 2)
-                        amount = Integer.parseInt(args[2]);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                
+                for (int i = 1; i < args.length; i++) {
+                    try {
+                        amount = Integer.parseInt(args[i]);
+                    } catch (NumberFormatException e) {
+                        Player foundPlayer = Bukkit.getPlayer(args[i]);
+                        if (foundPlayer != null) {
+                            player = foundPlayer;
+                        }
+                    }
                 }
-                if (player == null)
-                    player = pl;
+                
                 ItemStack compass = Compass.item.clone();
                 compass.setAmount(amount);
 
@@ -458,6 +460,19 @@ public class Commands implements CommandExecutor {
                 }
                 if (!hasEvents) {
                     Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("event-delay-no-events"));
+                }
+                return true;
+            }
+            if (args[0].equals("gps")) {
+                if (!pl.hasPermission("bair.gps")) {
+                    Message.sendMsg(pl, BAirDrop.getConfigMessage().getMessage("no-prem"));
+                    return true;
+                }
+                GpsCommand gpsCommand = new GpsCommand();
+                if (args.length > 1) {
+                    gpsCommand.onCommand(sender, command, label, new String[]{args[1]});
+                } else {
+                    gpsCommand.onCommand(sender, command, label, new String[]{});
                 }
                 return true;
             }

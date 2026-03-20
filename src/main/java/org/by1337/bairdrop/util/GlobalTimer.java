@@ -2,6 +2,7 @@ package org.by1337.bairdrop.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.by1337.bairdrop.AirDrop;
 import org.by1337.bairdrop.AirDropUtils;
 import org.by1337.bairdrop.BAirDrop;
@@ -13,6 +14,7 @@ public class GlobalTimer {
     private int timeToStartCons;
     private AirDrop air;
     private boolean stop;
+    private BukkitTask task;
 
     public GlobalTimer(int timeToStartCons) {
         this.timeToStartCons = timeToStartCons;
@@ -23,7 +25,7 @@ public class GlobalTimer {
 
     public void run() {
         Message.debug(BAirDrop.getConfigMessage().getMessage("global-timer-thread-start"), LogLevel.LOW);
-        new BukkitRunnable() {
+        task = new BukkitRunnable() {
             @Override
             public void run() {
                 if (stop) {
@@ -66,6 +68,14 @@ public class GlobalTimer {
                 }
             }
         }.runTaskTimerAsynchronously(BAirDrop.getInstance(), 20, 20);
+    }
+
+    public void shutdown() {
+        stop = true;
+        if (task != null && !task.isCancelled()) {
+            task.cancel();
+            task = null;
+        }
     }
 
 

@@ -491,7 +491,7 @@ public class CConfig implements Config, ConfigMessage {
                 }
             }
         }
-        Message.logger("[BAirDropS] Language: " + language);
+        Message.logger("[LunaAirDrop] Language: " + language);
     }
     
     private void initGlobalConfigs() {
